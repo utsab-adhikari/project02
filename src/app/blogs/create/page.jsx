@@ -2,9 +2,10 @@
 
 import ImageUploader from "@/components/ImageUploader";
 import axios from "axios";
+import dynamic from "next/dynamic";
 import React, { useEffect, useState, useRef } from "react";
 import { toast } from "react-hot-toast";
-import JoditEditor from "jodit-react";
+const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 const CreateBlog = () => {
   const editor = useRef(null);
