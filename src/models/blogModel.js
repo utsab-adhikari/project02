@@ -1,0 +1,37 @@
+import mongoose from "mongoose";
+
+const blogSchema = new mongoose.Schema({
+    author: {
+        type:String,
+        required: true,
+    },
+    category:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category',
+    },
+    title: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    slug: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
+    blogcontent:{
+        type: String,
+        required: true,
+        trim: true
+    },
+    featuredImage: {
+        type: String,
+        required: true,
+        trim: true
+    }
+
+}, {timestamps: true });
+
+const Blog = mongoose.models.Blog || mongoose.model('Blog', blogSchema, 'blogs');
+export default Blog;
