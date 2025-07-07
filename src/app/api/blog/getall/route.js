@@ -7,7 +7,7 @@ export async function GET(request) {
 
     await connectDB();
 
-    const blogs = await Blog.find().sort({ createdAt: -1 }); ;
+    const blogs = await Blog.find().sort({ createdAt: -1 });
 
     return NextResponse.json({
       success: true,

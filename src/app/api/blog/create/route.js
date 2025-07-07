@@ -1,5 +1,6 @@
 import connectDB from "@/db/ConnectDB";
 import Blog from "@/models/blogModel";
+import Category from "@/models/categoryModel";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
@@ -9,9 +10,13 @@ export async function POST(request) {
 
     const data = await request.json();
 
+    const category = data.category 
+
+    const cat = await Category.findOne({category});
+
     const blog = new Blog({
       author: data.author,
-      category: data.category,
+      category: cat._id,
       title: data.title,
       slug: data.slug,
       featuredImage: data.featuredImage,
@@ -26,6 +31,7 @@ export async function POST(request) {
       message: "Blog added successgully",
     });
   } catch (error) {
+    console.log(error);
     return NextResponse.json({
       success: false,
       status: 500,

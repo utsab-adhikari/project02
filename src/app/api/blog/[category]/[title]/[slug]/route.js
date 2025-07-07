@@ -1,5 +1,6 @@
 import connectDB from "@/db/ConnectDB";
 import Blog from "@/models/blogModel";
+import Category from "@/models/categoryModel";
 import { NextResponse } from "next/server";
 
 export async function GET(request, { params }) {
@@ -8,8 +9,10 @@ export async function GET(request, { params }) {
 
     const { category, title, slug } = await params;
 
+    const cat = await Category.findOne({category});
+
     const blog = await Blog.findOne({
-      category,
+      category: cat._id,
       title,
       slug,
     });

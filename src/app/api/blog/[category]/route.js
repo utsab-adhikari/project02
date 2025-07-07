@@ -9,7 +9,11 @@ export async function GET(request, { params }) {
 
     const { category } = await params;
 
-    const blogs = await Blog.find({category: category});
+    const cat = await Category.findOne({ category });
+
+    console.log(cat);
+
+    const blogs = await Blog.find({ category: cat._id });
 
     const noofblog = blogs.length;
 
@@ -18,9 +22,8 @@ export async function GET(request, { params }) {
       succes: true,
       message: "Catrgory Deleted",
       blogs,
-      noofblog
-    })
-    
+      noofblog,
+    });
   } catch (error) {
     return NextResponse.json({
       status: 500,
