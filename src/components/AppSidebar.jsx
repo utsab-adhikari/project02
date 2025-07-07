@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { IconSignRight } from "@tabler/icons-react";
 import { IoMdClose } from "react-icons/io";
+import { BsFillPostcardFill } from "react-icons/bs";
 
 import {
   Sidebar,
@@ -37,12 +38,24 @@ const menuItems = [
     icon: Newspaper,
   },
   {
+    title: "Posts",
+    url: "/posts",
+    icon: BsFillPostcardFill,
+  },
+  {
     title: "Create Blog",
     url: "/blogs/create",
     icon: PenSquare,
-  },{
+  },
+  {
     title: "Create Category",
     url: "/blogs/category/create",
+    icon: PenSquare,
+  },
+  ,
+  {
+    title: "Create Post",
+    url: "/posts/create",
     icon: PenSquare,
   },
   {

@@ -12,7 +12,7 @@ import Footer from "@/components/Footer";
 import Script from "next/script";
 
 export default function Layout({ children }) {
-  const pathname = usePathname();
+  const pathname = usePathname("");
   const [isIndex, setIsIndex] = useState(false);
   const router = useRouter();
 

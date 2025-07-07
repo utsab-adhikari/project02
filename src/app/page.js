@@ -1,12 +1,16 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import toast from "react-hot-toast";
-import Link from "next/link";
+import { toast, Toaster } from "react-hot-toast"; // Import Toaster for notifications
+import Link from "next/link"; // Assuming Next.js Link component
+import { FaArrowRight, FaCode, FaGraduationCap, FaLightbulb, FaEnvelope, FaUser, FaCommentDots, FaSpinner } from "react-icons/fa"; // Icons for various sections
 
 const LandingPage = () => {
   const [blogs, setBlogs] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [loadingBlogs, setLoadingBlogs] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
   useEffect(() => {
     const getBlogs = async () => {
@@ -14,9 +18,11 @@ const LandingPage = () => {
         const res = await axios.get(`/api/blog/getall`, {
           withCredentials: true,
         });
-        setBlogs(res.data.blogs.slice(0, 3));
+        setBlogs(res.data.blogs.slice(0, 3)); // Still limiting to 3 for the landing page
       } catch (err) {
-        toast.error("Failed to load blogs.");
+        toast.error("Failed to load latest blogs.");
+      } finally {
+        setLoadingBlogs(false);
       }
     };
 
@@ -28,6 +34,8 @@ const LandingPage = () => {
         setCategories(res.data.category);
       } catch (err) {
         toast.error("Failed to load categories.");
+      } finally {
+        setLoadingCategories(false);
       }
     };
 
@@ -36,120 +44,226 @@ const LandingPage = () => {
   }, []);
 
   return (
-    <div className="text-white min-h-screen">
-      {/* Hero */}
-      <section className="text-center py-16 px-4 bg-[#1e293b] shadow-lg">
-        <h1 className="text-4xl font-bold mb-4 text-white">Welcome to DevBlogs</h1>
-        <p className="text-lg max-w-2xl mx-auto text-gray-300">
-          A place to explore ideas, share insights, and stay updated with technology, education, and more.
-        </p>
-      </section>
+    <div className="bg-gray-900 text-white min-h-screen font-inter">
+      <Toaster position="top-center" reverseOrder={false} />
 
-      {/* Latest Blogs */}
-      <section className="px-6 py-12 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8 text-indigo-400">Latest Blogs</h2>
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-          {blogs.map((blog) => (
-            <div
-              key={blog._id}
-              className="rounded-xl bg-white/5 backdrop-blur-md p-4 shadow hover:shadow-indigo-500/30 transition duration-300 flex flex-col"
+      {/* Hero Section */}
+      <section className="relative overflow-hidden py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 to-indigo-950 shadow-2xl">
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div> {/* Subtle background pattern */}
+        <div className="relative max-w-4xl mx-auto text-center z-10">
+          <h1 className="text-5xl sm:text-6xl font-extrabold mb-6 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 drop-shadow-lg animate-fade-in-down">
+            Welcome to DevBlogs
+          </h1>
+          <p className="text-xl sm:text-2xl max-w-3xl mx-auto text-gray-300 mb-8 animate-fade-in-up">
+            Your hub for cutting-edge insights, shared knowledge, and vibrant discussions across technology, education, and beyond.
+          </p>
+          <div className="flex justify-center gap-4 animate-fade-in-up delay-200">
+            <Link
+              href="/blogs"
+              className="inline-flex items-center px-8 py-3 bg-indigo-600 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-700 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
             >
-              {blog.featuredImage && (
-                <img
-                  src={blog.featuredImage}
-                  alt={blog.title}
-                  className="h-40 w-full object-cover rounded-md mb-4"
-                />
-              )}
-              <div className="flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 className="text-xl font-semibold text-white line-clamp-2">
-                    {blog.title}
-                  </h3>
-                  <p className="text-sm text-gray-400 mt-1">
-                    <span className="font-medium text-gray-300">Slug:</span> {blog.slug}
-                  </p>
-                  <div className="mt-2 flex gap-2 flex-wrap text-xs">
-                    <span className="bg-indigo-400/20 text-indigo-200 px-2 py-1 rounded-full">
-                      {blog.category}
-                    </span>
-                    <span className="bg-indigo-500 text-white px-2 py-1 rounded-full">
-                      by {blog.author}
-                    </span>
-                  </div>
-                </div>
-                <Link
-                  href={`/blogs/${blog.slug}`}
-                  className="mt-4 text-sm text-indigo-300 font-semibold hover:underline"
-                >
-                  Read More →
-                </Link>
-              </div>
-            </div>
-          ))}
+              Explore Blogs <FaArrowRight className="ml-2" />
+            </Link>
+            <Link
+              href="/posts/create"
+              className="inline-flex items-center px-8 py-3 border border-indigo-500 text-indigo-300 font-semibold rounded-full shadow-lg hover:bg-indigo-500 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+            >
+              Write a Post <FaCode className="ml-2" />
+            </Link>
+          </div>
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="bg-[#0f172a] px-6 py-12">
-        <h2 className="text-3xl font-bold text-center mb-6 text-indigo-400">
-          Explore Categories
+      {/* Latest Blogs Section */}
+      <section className="px-4 py-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <h2 className="text-4xl font-extrabold text-center mb-12 text-indigo-400 drop-shadow-lg">
+          Our Latest Insights
         </h2>
-        {categories.length === 0 ? (
-          <p className="text-center text-gray-500">No categories available.</p>
+        {loadingBlogs ? (
+          <div className="flex flex-col items-center justify-center h-64 bg-[#1e1f21] rounded-xl shadow-lg border border-gray-700">
+            <FaSpinner className="animate-spin text-indigo-500 text-5xl mb-4" />
+            <p className="text-gray-400 text-xl font-medium">Fetching the freshest blogs...</p>
+          </div>
+        ) : blogs.length === 0 ? (
+          <div className="text-center p-12 bg-[#1e1f21] rounded-xl shadow-lg border border-gray-700 flex flex-col items-center justify-center">
+            <FaLightbulb className="text-indigo-400 text-6xl mb-6" />
+            <p className="text-red-400 text-2xl font-semibold mb-2">
+              No recent blogs to display.
+            </p>
+            <p className="text-gray-400 text-lg">
+              Be the first to publish an amazing article!
+            </p>
+          </div>
         ) : (
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+            {blogs.map((blog) => (
+              <div
+                key={blog._id}
+                className="bg-[#1e1f21] border border-gray-700 rounded-xl shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 ease-in-out flex flex-col overflow-hidden transform hover:-translate-y-1"
+              >
+                {blog.featuredImage ? (
+                  <img
+                    src={blog.featuredImage}
+                    alt={blog.title}
+                    className="h-48 w-full object-cover rounded-t-xl border-b border-gray-700"
+                    onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x200/333333/FFFFFF?text=Image+Unavailable"; }} // Fallback
+                  />
+                ) : (
+                  <div className="h-48 w-full bg-gray-800 flex items-center justify-center rounded-t-xl border-b border-gray-700">
+                    <span className="text-gray-500 text-sm">No Image</span>
+                  </div>
+                )}
+                <div className="p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-2 line-clamp-2 leading-tight">
+                      {blog.title}
+                    </h3>
+                    <p className="text-sm text-gray-400 mb-2 line-clamp-1">
+                      <span className="text-gray-300 font-medium">Slug:</span>{" "}
+                      {blog.slug}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      <span className="text-xs bg-indigo-600/30 text-indigo-200 font-semibold px-3 py-1.5 rounded-full shadow-sm">
+                        {blog.category}
+                      </span>
+                      <span className="text-xs bg-gray-700 text-gray-300 font-medium px-3 py-1.5 rounded-full shadow-sm">
+                        By {blog.author}
+                      </span>
+                    </div>
+                  </div>
+                  <Link
+                    href={`/blogs/${blog.category}/${blog.title}/${blog.slug}`}
+                    className="mt-6 inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                  >
+                    Read More <FaArrowRight className="ml-2" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        <div className="text-center mt-12">
+          <Link
+            href="/blogs"
+            className="inline-flex items-center px-8 py-3 bg-transparent border border-indigo-500 text-indigo-300 font-semibold rounded-full shadow-lg hover:bg-indigo-500 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+          >
+            View All Blogs <FaArrowRight className="ml-2" />
+          </Link>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="bg-gray-800 px-4 py-16 sm:px-6 lg:px-8">
+        <h2 className="text-4xl font-extrabold text-center mb-12 text-indigo-400 drop-shadow-lg">
+          Explore Diverse Categories
+        </h2>
+        {loadingCategories ? (
+          <div className="flex flex-col items-center justify-center h-40">
+            <FaSpinner className="animate-spin text-indigo-500 text-4xl mb-4" />
+            <p className="text-gray-400 text-lg">Loading categories...</p>
+          </div>
+        ) : categories.length === 0 ? (
+          <div className="text-center p-8 bg-[#1e1f21] rounded-xl shadow-lg border border-gray-700">
+            <p className="text-gray-500 text-lg">No categories available yet.</p>
+          </div>
+        ) : (
+          <div className="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto">
             {categories.map((cat) => (
-              <span
+              <Link
                 key={cat._id}
-                className="px-4 py-2 bg-indigo-400/10 text-indigo-200 border border-indigo-600 rounded-full text-sm font-medium"
+                href={`/blogs/category/${cat.category}`} // Assuming a category specific page
+                className="px-6 py-3 bg-indigo-600/20 text-indigo-200 border border-indigo-600 rounded-full text-lg font-medium hover:bg-indigo-600 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800"
               >
                 {cat.category}
-              </span>
+              </Link>
             ))}
           </div>
         )}
       </section>
 
-      {/* About */}
-      <section className="bg-[#1e293b] px-6 py-12 text-center">
-        <h2 className="text-3xl font-bold text-indigo-400 mb-4">
+      {/* About Section */}
+      <section className="bg-gray-900 px-4 py-16 sm:px-6 lg:px-8 text-center">
+        <h2 className="text-4xl font-extrabold text-indigo-400 mb-8 drop-shadow-lg">
           About DevBlogs
         </h2>
-        <p className="max-w-3xl mx-auto text-gray-300 text-lg">
-          DevBlogs is a community-driven platform where developers, students,
-          and enthusiasts share their ideas and projects. Whether you're into
-          web development, AI, engineering, or storytelling, there's a place
-          here for you to publish and grow.
+        <p className="max-w-4xl mx-auto text-gray-300 text-lg leading-relaxed mb-8">
+          DevBlogs is more than just a platform; it's a vibrant community where innovation meets inspiration. We empower developers, students, and enthusiasts to share their unique perspectives, groundbreaking projects, and valuable insights. Whether you're diving deep into web development, exploring the frontiers of AI, mastering engineering principles, or simply sharing compelling stories, DevBlogs provides the perfect space for you to publish, connect, and grow. Join us in shaping the future of knowledge sharing!
         </p>
+        <div className="flex justify-center gap-6 mt-8">
+          <div className="flex flex-col items-center">
+            <FaCode className="text-indigo-400 text-5xl mb-3" />
+            <p className="text-gray-300 font-semibold">Technical Expertise</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <FaGraduationCap className="text-indigo-400 text-5xl mb-3" />
+            <p className="text-gray-300 font-semibold">Educational Insights</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <FaLightbulb className="text-indigo-400 text-5xl mb-3" />
+            <p className="text-gray-300 font-semibold">Creative Storytelling</p>
+          </div>
+        </div>
       </section>
 
-      {/* Contact */}
-      <section className="bg-[#0f172a] px-6 py-12">
-        <h2 className="text-3xl font-bold text-center text-indigo-400 mb-4">
-          Contact Us
+      {/* Contact Section */}
+      <section className="bg-gray-800 px-4 py-16 sm:px-6 lg:px-8">
+        <h2 className="text-4xl font-extrabold text-center text-indigo-400 mb-12 drop-shadow-lg">
+          Get In Touch
         </h2>
-        <form className="max-w-xl mx-auto grid gap-4">
-          <input
-            type="text"
-            placeholder="Your Name"
-            className="p-3 bg-gray-800 border border-gray-700 rounded text-white placeholder-gray-500"
-          />
-          <input
-            type="email"
-            placeholder="Your Email"
-            className="p-3 bg-gray-800 border border-gray-700 rounded text-white placeholder-gray-500"
-          />
-          <textarea
-            placeholder="Your Message"
-            rows={5}
-            className="p-3 bg-gray-800 border border-gray-700 rounded text-white placeholder-gray-500"
-          />
+        <form className="max-w-2xl mx-auto grid gap-6 p-8 bg-[#1e1f21] rounded-xl shadow-2xl border border-gray-700">
+          <div className="relative">
+            <input
+              type="text"
+              id="name"
+              placeholder=" "
+              className="peer p-4 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full transition-all duration-300"
+            />
+            <label
+              htmlFor="name"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base transition-all duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-400"
+            >
+              Your Name
+            </label>
+            <FaUser className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
+
+          <div className="relative">
+            <input
+              type="email"
+              id="email"
+              placeholder=" "
+              className="peer p-4 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full transition-all duration-300"
+            />
+            <label
+              htmlFor="email"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base transition-all duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-400"
+            >
+              Your Email
+            </label>
+            <FaEnvelope className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" />
+          </div>
+
+          <div className="relative">
+            <textarea
+              id="message"
+              placeholder=" "
+              rows={6}
+              className="peer p-4 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full transition-all duration-300 resize-y"
+            />
+            <label
+              htmlFor="message"
+              className="absolute left-4 top-4 text-gray-400 text-base transition-all duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-400"
+            >
+              Your Message
+            </label>
+            <FaCommentDots className="absolute right-4 top-4 text-gray-500" />
+          </div>
+
           <button
             type="submit"
-            className="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded font-medium transition"
+            className="mt-4 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
           >
-            Send Message
+            Send Message <FaArrowRight className="ml-2" />
           </button>
         </form>
       </section>
