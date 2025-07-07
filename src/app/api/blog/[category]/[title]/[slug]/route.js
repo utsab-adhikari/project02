@@ -12,7 +12,7 @@ export async function GET(request, { params }) {
     const cat = await Category.findOne({category});
 
     const blog = await Blog.findOne({
-      category: cat._id,
+      catid: cat._id,
       title,
       slug,
     });

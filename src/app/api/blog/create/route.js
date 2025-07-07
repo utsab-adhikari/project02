@@ -16,7 +16,8 @@ export async function POST(request) {
 
     const blog = new Blog({
       author: data.author,
-      category: cat._id,
+      category: data.category,
+      catid: cat._id,
       title: data.title,
       slug: data.slug,
       featuredImage: data.featuredImage,

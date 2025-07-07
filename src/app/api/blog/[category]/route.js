@@ -11,9 +11,7 @@ export async function GET(request, { params }) {
 
     const cat = await Category.findOne({ category });
 
-    console.log(cat);
-
-    const blogs = await Blog.find({ category: cat._id });
+    const blogs = await Blog.find({ catid: cat._id });
 
     const noofblog = blogs.length;
 

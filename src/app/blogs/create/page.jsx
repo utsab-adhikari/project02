@@ -48,15 +48,15 @@ const CreateBlog = () => {
       });
 
       toast.success(res.data.message || "Blog created successfully!");
-      // setFormData({
-      //   title: "",
-      //   slug: "",
-      //   category: "",
-      //   author: "",
-      //   featuredImage: "",
-      //   blogcontent: "",
-      // });
-      // setImageUrl("");
+      setFormData({
+        title: "",
+        slug: "",
+        category: "",
+        author: "",
+        featuredImage: "",
+        blogcontent: "",
+      });
+      setImageUrl("");
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Something went wrong.");
@@ -161,7 +161,7 @@ const CreateBlog = () => {
               <JoditEditor
                 ref={editor}
                 value={formData.blogcontent}
-                onBlur={handleEditorChange}
+                onChange={handleEditorChange}
                 config={{
                   theme: "dark",
                   readonly: false,

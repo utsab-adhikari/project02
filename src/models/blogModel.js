@@ -6,6 +6,11 @@ const blogSchema = new mongoose.Schema({
         required: true,
     },
     category:{
+        type: String,
+        required: true,
+        trim: true
+    },
+    catid: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category',
     },
