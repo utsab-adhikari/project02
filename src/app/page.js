@@ -171,7 +171,7 @@ const LandingPage = () => {
             {categories.map((cat) => (
               <Link
                 key={cat._id}
-                href={`/blogs/category/${cat.category}`} // Assuming a category specific page
+                href={`/blogs/${cat.category}`}
                 className="px-6 py-3 bg-indigo-600/20 text-indigo-200 border border-indigo-600 rounded-full text-lg font-medium hover:bg-indigo-600 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800"
               >
                 {cat.category}
