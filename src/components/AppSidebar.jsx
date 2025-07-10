@@ -25,69 +25,32 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { signOut, useSession } from "next-auth/react";
 
-const menuItems = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Blogs",
-    url: "/blogs",
-    icon: Newspaper,
-  },
-  {
-    title: "Posts",
-    url: "/posts",
-    icon: BsFillPostcardFill,
-  },
-  {
-    title: "Create Blog",
-    url: "/blogs/create",
-    icon: PenSquare,
-  },
-  {
-    title: "Create Category",
-    url: "/blogs/category/create",
-    icon: PenSquare,
-  },
-  ,
-  {
-    title: "Create Post",
-    url: "/posts/create",
-    icon: PenSquare,
-  },
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
+const baseMenuItems = [
+  { title: "Home", url: "/", icon: Home },
+  { title: "Blogs", url: "/blogs", icon: Newspaper },
+  { title: "Posts", url: "/posts", icon: BsFillPostcardFill },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+];
+
+const createMenuItems = [
+  { title: "Create Blog", url: "/blogs/create", icon: PenSquare },
+  { title: "Create Category", url: "/blogs/category/create", icon: PenSquare },
+  { title: "Create Post", url: "/posts/create", icon: PenSquare },
 ];
 
 const userItems = [
-  {
-    title: "Login",
-    url: "/login",
-    icon: LogIn,
-  },
-  {
-    title: "Signup",
-    url: "/signup",
-    icon: UserRoundPlus,
-  },
+  { title: "Login", url: "/auth/login", icon: LogIn },
+  { title: "Signup", url: "/signup", icon: UserRoundPlus },
 ];
 
-const utilityItems = [
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-];
+const utilityItems = [{ title: "Settings", url: "/settings", icon: Settings }];
 
 export function AppSidebar() {
   const { toggleSidebar } = useSidebar();
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated";
 
   return (
     <Sidebar>
@@ -107,7 +70,7 @@ export function AppSidebar() {
           {/* Main Navigation */}
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item) => (
+              {baseMenuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url} className="flex items-center gap-2">
@@ -117,27 +80,71 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+
+              {/* Conditional Create Options */}
+              {isLoggedIn &&
+                createMenuItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url} className="flex items-center gap-2">
+                        <item.icon size={18} />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
             </SidebarMenu>
           </SidebarGroupContent>
 
-          {/* User Navigation */}
+          {/* 👤 Auth Navigation */}
           <SidebarGroupLabel>👤 Account</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {userItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
+              {!isLoggedIn &&
+                userItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <a href={item.url} className="flex items-center gap-2">
+                        <item.icon size={18} />
+                        <span>{item.title}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+
+              {isLoggedIn && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => signOut({ callbackUrl: "/auth/login" })}
+                    className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded w-full"
+                  >
+                    <span>Log Out</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
+              {isLoggedIn && session?.user && (
+                <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <a href={item.url} className="flex items-center gap-2">
-                      <item.icon size={18} />
-                      <span>{item.title}</span>
+                    <a
+                      href={`/profile/${encodeURIComponent(
+                        session.user.email
+                      )}`}
+                      className="flex items-center gap-2 w-full"
+                    >
+                      <img
+                        src={session.user.image}
+                        alt="Profile"
+                        className="w-6 h-6 rounded-full object-cover border border-white"
+                      />
+                      <span className="truncate">{session.user.name}</span>
                     </a>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
-              ))}
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
 
-          {/* Settings */}
+          {/* ⚙️ Settings */}
           <SidebarGroupLabel>⚙️ More</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>

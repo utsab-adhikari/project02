@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast"; // Import Toaster for notifications
 import Link from "next/link"; // Assuming Next.js Link component
@@ -11,6 +12,11 @@ const LandingPage = () => {
   const [categories, setCategories] = useState([]);
   const [loadingBlogs, setLoadingBlogs] = useState(true);
   const [loadingCategories, setLoadingCategories] = useState(true);
+
+  const { data: session, status } = useSession();
+
+  console.log(session);
+  console.log(status);
 
   useEffect(() => {
     const getBlogs = async () => {
