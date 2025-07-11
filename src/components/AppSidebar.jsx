@@ -30,7 +30,7 @@ import { signOut, useSession } from "next-auth/react";
 const baseMenuItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Blogs", url: "/blogs", icon: Newspaper },
-  { title: "Posts", url: "/posts", icon: BsFillPostcardFill },
+  // { title: "Posts", url: "/posts", icon: BsFillPostcardFill },
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
 ];
 

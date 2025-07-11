@@ -115,28 +115,30 @@ Tomorrow: 21
     type: "content",
     title: "How Enumeration Works Internally",
     points: [
-      "Underlying Type: By default, `int`, but can be specified for `enum class` (e.g., `enum class ByteFlag : unsigned char`).",
-      "Value Assignment: First enumerator is 0 by default; subsequent ones increment by 1. Custom values can be assigned (e.g., `enum State { ON = 1, OFF = 0 };`).",
-      "Memory Storage: An `enum` variable stores the integer value. Its size depends on its underlying type.",
+      "Underlying Type: By default, the underlying type of an enum is `int` in C++. You cannot explicitly specify a different type for traditional enums.",
+      "Value Assignment: First enumerator starts at 0 by default; each next one increments by 1. Custom values can also be assigned (e.g., `enum State { ON = 1, OFF = 0 };`).",
+      "Memory Storage: An `enum` variable stores an integer value. Its size is typically 4 bytes (like `int`), depending on system architecture and compiler.",
     ],
-    background: "bg-gradient-to-br from-slate-800 to-gray-800", // Darker background
+    background: "bg-gradient-to-br from-slate-800 to-gray-800",
   },
   {
     type: "advantages-disadvantages",
     title: "Advantages & Disadvantages",
     advantages: [
-      "Improved code clarity.",
-      "Implicit conversion (traditional enum).",
-      "Stronger type checking (enum class).",
-      "Prevents 'magic number' issues.",
-      "Easier debugging with descriptive names.",
+      "Improved code clarity with named constants.",
+      "Implicit conversion to `int` makes enums usable in arithmetic and conditions.",
+      "Helps group related values under one type.",
+      "Reduces risk of using wrong raw values.",
+      "Simple and compatible with switch statements.",
     ],
     disadvantages: [
-      "Can increase binary size slightly for large enums.",
-      "Adding new enumerators might break switch statements (need default or all cases).",
-      "Debugging enum values can show raw integers instead of names in some tools.",
+      "No type safety — enums can be mixed with integers, which can lead to bugs.",
+      "Name conflicts can occur if multiple enums have same names in the same scope.",
+      "Underlying type cannot be customized.",
+      "Debuggers often display the integer value instead of the name.",
+      "Switch statements may need updates if new enum values are added.",
     ],
-    background: "bg-gradient-to-br from-zinc-800 to-slate-800", // Darker background
+    background: "bg-gradient-to-br from-zinc-800 to-slate-800",
   },
   {
     type: "use-cases",
