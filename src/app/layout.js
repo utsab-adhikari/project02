@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
   const [isIndex, setIsIndex] = useState(false);
 
   useEffect(() => {
-    setIsIndex(pathname === "/");
+    setIsIndex(pathname === "/" || pathname === "/slide");
   }, [pathname]);
 
   return (
@@ -47,7 +47,7 @@ export default function RootLayout({ children }) {
             <div className="flex flex-1 w-full">
               {/* ✅ Now inside SidebarProvider */}
               <AppSidebar />
-              <SidebarTrigger className="fixed z-30 block md:hidden top-2 left-2" />
+              <SidebarTrigger className="fixed z-30  top-2 left-2" />
 
               {!isIndex && (
                 <button

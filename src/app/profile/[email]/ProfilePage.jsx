@@ -21,7 +21,6 @@ export default function ProfilePage() {
         const res = await axios.get(`/api/profile/${email}`, {
           withCredentials: true,
         });
-
         if (!res?.data?.profile) {
           toast.error("Profile not found.");
         } else {
