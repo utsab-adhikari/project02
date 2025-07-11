@@ -1,7 +1,7 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight } from 'lucide-react'; // Using lucide-react for icons
+import { ChevronRight } from "lucide-react"; // Using lucide-react for icons
 
 // Define the slide data based on the PPT content and user's initial slides
 const slides = [
@@ -10,7 +10,7 @@ const slides = [
     title: "Enumeration in OOP (C++)",
     subtitle: "Presented by Utsab Adhikari",
     meta: "Roll No.: 241531 | Nepal College of Information Technology, Department of IT Engineering",
-    background: "bg-gradient-to-br from-gray-900 to-black" // Darker background
+    background: "bg-gradient-to-br from-gray-900 to-black", // Darker background
   },
   {
     type: "content",
@@ -19,9 +19,9 @@ const slides = [
       "User-defined data type for naming integral constants.",
       "Creates a set of named integer values.",
       "Enhances code readability and maintainability.",
-      "Replaces 'magic numbers' with meaningful names."
+      "Replaces 'magic numbers' with meaningful names.",
     ],
-    background: "bg-gradient-to-br from-slate-900 to-gray-900" // Darker background
+    background: "bg-gradient-to-br from-slate-900 to-gray-900", // Darker background
   },
   {
     type: "code-example",
@@ -30,32 +30,86 @@ const slides = [
       {
         heading: "Traditional Enum",
         code: `enum Color { RED, GREEN, BLUE };`,
-        points: ["Implicitly converts to int.", "Values can clash in the same scope."]
+        points: [
+          "Implicitly converts to int.",
+          "Values can clash in the same scope.",
+        ],
       },
       {
         heading: "Enum Class (Scoped) - C++11",
         code: `enum class TrafficLight { RED, YELLOW, GREEN };`,
-        points: ["Requires explicit cast to int.", "Prevents name clashes and improves type safety."]
-      }
+        points: [
+          "Requires explicit cast to int.",
+          "Prevents name clashes and improves type safety.",
+        ],
+      },
     ],
-    background: "bg-gradient-to-br from-zinc-900 to-slate-900" // Darker background
+    background: "bg-gradient-to-br from-zinc-900 to-slate-900", // Darker background
   },
   {
     type: "code-example",
     title: "Practical Example: Days of the Week",
-    code: `#include <iostream>\n\nenum class Day {\n    SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY\n};\n\nvoid printDay(Day day) {\n    switch (day) {\n        case Day::SUNDAY: std::cout << "Sunday" << std::endl; break;\n        case Day::MONDAY: std::cout << "Monday" << std::endl; break;\n        case Day::TUESDAY: std::cout << "Tuesday" << std::endl; break;\n        case Day::WEDNESDAY: std::cout << "Wednesday" << std::endl; break;\n        case Day::THURSDAY: std::cout << "Thursday" << std::endl; break;\n        case Day::FRIDAY: std::cout << "Friday" << std::endl; break;\n        case Day::SATURDAY: std::cout << "Saturday" << std::endl; break;\n        default: std::cout << "Unknown Day" << std::endl; break;\n    }\n}\n\nint main() {\n    Day today = Day::WEDNESDAY;\n    printDay(today); // Output: Wednesday\n    return 0;\n}`,
-    background: "bg-gradient-to-br from-neutral-900 to-zinc-900" // Darker background
+    code: `#include <iostream>
+using namespace std;
+
+enum Days {
+    SUNDAY,
+    MONDAY,
+    TUESDAY,
+    WEDNESDAY,
+    THURSDAY,
+    FRIDAY = 20,
+    SATURDAY
+};
+
+int main() {
+    Days yesterday = THURSDAY;
+    Days today = FRIDAY;
+    Days tomorrow = FRIDAY;
+
+    cout << "Yesterday: \"" << yesterday << "\"" << endl;
+    cout << "Today: \"" << today << "\"" << endl;
+    cout << "Tomorrow: \"" << tomorrow<< "\"" << endl;
+
+    return 0;
+}
+
+<----OutPut----->
+Yesterday: 4
+Today: 20
+Tomorrow: 21
+`,
+    background: "bg-gradient-to-br from-neutral-900 to-zinc-900", // Darker background
   },
   {
     type: "features",
     title: "Why We Need Enumeration",
     features: [
-      { icon: "📖", name: "Enhanced Readability", description: "Replaces obscure integer constants with self-documenting names." },
-      { icon: "📦", name: "Constant Grouping", description: "Logically groups related constants under a single type." },
-      { icon: "🛡️", name: "Type Safety", description: "Prevents accidental assignments or comparisons (especially with enum class)." },
-      { icon: "🐞", name: "Reduced Errors", description: "Minimizes risk of incorrect or out-of-range integer values." }
+      {
+        icon: "📖",
+        name: "Enhanced Readability",
+        description:
+          "Replaces obscure integer constants with self-documenting names.",
+      },
+      {
+        icon: "📦",
+        name: "Constant Grouping",
+        description: "Logically groups related constants under a single type.",
+      },
+      {
+        icon: "🛡️",
+        name: "Type Safety",
+        description:
+          "Prevents accidental assignments or comparisons (especially with enum class).",
+      },
+      {
+        icon: "🐞",
+        name: "Reduced Errors",
+        description:
+          "Minimizes risk of incorrect or out-of-range integer values.",
+      },
     ],
-    background: "bg-gradient-to-br from-gray-800 to-neutral-800" // Darker background
+    background: "bg-gradient-to-br from-gray-800 to-neutral-800", // Darker background
   },
   {
     type: "content",
@@ -63,9 +117,9 @@ const slides = [
     points: [
       "Underlying Type: By default, `int`, but can be specified for `enum class` (e.g., `enum class ByteFlag : unsigned char`).",
       "Value Assignment: First enumerator is 0 by default; subsequent ones increment by 1. Custom values can be assigned (e.g., `enum State { ON = 1, OFF = 0 };`).",
-      "Memory Storage: An `enum` variable stores the integer value. Its size depends on its underlying type."
+      "Memory Storage: An `enum` variable stores the integer value. Its size depends on its underlying type.",
     ],
-    background: "bg-gradient-to-br from-slate-800 to-gray-800" // Darker background
+    background: "bg-gradient-to-br from-slate-800 to-gray-800", // Darker background
   },
   {
     type: "advantages-disadvantages",
@@ -75,24 +129,38 @@ const slides = [
       "Implicit conversion (traditional enum).",
       "Stronger type checking (enum class).",
       "Prevents 'magic number' issues.",
-      "Easier debugging with descriptive names."
+      "Easier debugging with descriptive names.",
     ],
     disadvantages: [
       "Can increase binary size slightly for large enums.",
       "Adding new enumerators might break switch statements (need default or all cases).",
-      "Debugging enum values can show raw integers instead of names in some tools."
+      "Debugging enum values can show raw integers instead of names in some tools.",
     ],
-    background: "bg-gradient-to-br from-zinc-800 to-slate-800" // Darker background
+    background: "bg-gradient-to-br from-zinc-800 to-slate-800", // Darker background
   },
   {
     type: "use-cases",
     title: "Real-World Use Cases",
     cases: [
-      { name: "Traffic Light System", description: "Representing states like RED, YELLOW, GREEN.", icon: "🚦" },
-      { name: "Game Character States", description: "Managing states such as IDLE, RUNNING, JUMPING, ATTACKING.", icon: "🎮" },
-      { name: "UI Themes", description: "Defining visual themes like LIGHT_MODE, DARK_MODE, HIGH_CONTRAST.", icon: "🎨" }
+      {
+        name: "Traffic Light System",
+        description: "Representing states like RED, YELLOW, GREEN.",
+        icon: "🚦",
+      },
+      {
+        name: "Game Character States",
+        description:
+          "Managing states such as IDLE, RUNNING, JUMPING, ATTACKING.",
+        icon: "🎮",
+      },
+      {
+        name: "UI Themes",
+        description:
+          "Defining visual themes like LIGHT_MODE, DARK_MODE, HIGH_CONTRAST.",
+        icon: "🎨",
+      },
     ],
-    background: "bg-gradient-to-br from-neutral-800 to-zinc-800" // Darker background
+    background: "bg-gradient-to-br from-neutral-800 to-zinc-800", // Darker background
   },
   {
     type: "conclusion",
@@ -102,17 +170,18 @@ const slides = [
       "Enumerations are a fundamental feature in C++.",
       "Create readable, maintainable, and type-safe code.",
       "Enhance code clarity and reduce errors.",
-      "Indispensable in modern OOP development."
+      "Indispensable in modern OOP development.",
     ],
-    background: "bg-gradient-to-br from-gray-900 to-black" 
+    background: "bg-gradient-to-br from-gray-900 to-black",
   },
   {
     type: "thank-you",
     title: "Thank You!",
-    message: "Thank you for your attention. If you have any questions, feel free to ask!",
+    message:
+      "Thank you for your attention. If you have any questions, feel free to ask!",
     contact: "Utsab Adhikari | Roll No.: 241531",
-    background: "bg-gradient-to-br from-gray-900 to-black" // A slightly different dark gradient for the end
-  }
+    background: "bg-gradient-to-br from-gray-900 to-black", // A slightly different dark gradient for the end
+  },
 ];
 
 export default function App() {
@@ -182,7 +251,9 @@ export default function App() {
             >
               {slide.title}
             </motion.h1>
-            <ul className="text-xl md:text-2xl space-y-4 text-gray-200 text-left max-w-3xl mx-auto list-disc list-inside"> {/* Adjusted text color */}
+            <ul className="text-xl md:text-2xl space-y-4 text-gray-200 text-left max-w-3xl mx-auto list-disc list-inside">
+              {" "}
+              {/* Adjusted text color */}
               {slide.points.map((p, idx) => (
                 <motion.li
                   key={idx}
@@ -217,11 +288,17 @@ export default function App() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.1 * idx + 0.2 }}
                   >
-                    <h3 className="text-2xl font-semibold mb-4 text-indigo-300">{section.heading}</h3>
-                    <pre className="bg-black/60 p-4 rounded-lg text-sm text-green-300 overflow-auto mb-4 flex-grow"> {/* Darker background for pre */}
+                    <h3 className="text-2xl font-semibold mb-4 text-indigo-300">
+                      {section.heading}
+                    </h3>
+                    <pre className="bg-black/60 p-4 rounded-lg text-sm text-green-300 overflow-auto mb-4 flex-grow">
+                      {" "}
+                      {/* Darker background for pre */}
                       <code>{section.code}</code>
                     </pre>
-                    <ul className="text-lg text-gray-300 list-disc list-inside space-y-1"> {/* Adjusted text color */}
+                    <ul className="text-lg text-gray-300 list-disc list-inside space-y-1">
+                      {" "}
+                      {/* Adjusted text color */}
                       {section.points.map((p, pIdx) => (
                         <li key={pIdx}>{p}</li>
                       ))}
@@ -236,7 +313,9 @@ export default function App() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <pre className="bg-black/60 p-4 rounded-lg text-sm md:text-base text-green-300 overflow-auto max-h-[60vh]"> {/* Darker background for pre */}
+                <pre className="bg-black/60 p-4 rounded-lg text-sm md:text-base text-green-300 overflow-auto max-h-[60vh]">
+                  {" "}
+                  {/* Darker background for pre */}
                   <code>{slide.code}</code>
                 </pre>
               </motion.div>
@@ -263,7 +342,9 @@ export default function App() {
                   transition={{ delay: 0.1 * idx + 0.2 }}
                 >
                   <span className="text-5xl mb-3">{feature.icon}</span>
-                  <h3 className="text-2xl font-semibold mb-2">{feature.name}</h3>
+                  <h3 className="text-2xl font-semibold mb-2">
+                    {feature.name}
+                  </h3>
                   <p className="text-lg">{feature.description}</p>
                 </motion.div>
               ))}
@@ -287,8 +368,12 @@ export default function App() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
               >
-                <h3 className="text-3xl font-semibold mb-4 text-white">Advantages ✅</h3>
-                <ul className="text-xl text-gray-200 space-y-3 list-disc list-inside"> {/* Adjusted text color */}
+                <h3 className="text-3xl font-semibold mb-4 text-white">
+                  Advantages ✅
+                </h3>
+                <ul className="text-xl text-gray-200 space-y-3 list-disc list-inside">
+                  {" "}
+                  {/* Adjusted text color */}
                   {slide.advantages.map((p, idx) => (
                     <li key={idx}>{p}</li>
                   ))}
@@ -300,8 +385,12 @@ export default function App() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
               >
-                <h3 className="text-3xl font-semibold mb-4 text-white">Disadvantages ⚠️</h3>
-                <ul className="text-xl text-gray-200 space-y-3 list-disc list-inside"> {/* Adjusted text color */}
+                <h3 className="text-3xl font-semibold mb-4 text-white">
+                  Disadvantages ⚠️
+                </h3>
+                <ul className="text-xl text-gray-200 space-y-3 list-disc list-inside">
+                  {" "}
+                  {/* Adjusted text color */}
                   {slide.disadvantages.map((p, idx) => (
                     <li key={idx}>{p}</li>
                   ))}
@@ -355,7 +444,9 @@ export default function App() {
             >
               {slide.quote}
             </motion.p>
-            <ul className="text-xl md:text-2xl space-y-3 text-gray-200 text-left max-w-2xl mx-auto list-disc list-inside"> {/* Adjusted text color */}
+            <ul className="text-xl md:text-2xl space-y-3 text-gray-200 text-left max-w-2xl mx-auto list-disc list-inside">
+              {" "}
+              {/* Adjusted text color */}
               {slide.points.map((p, idx) => (
                 <motion.li
                   key={idx}
