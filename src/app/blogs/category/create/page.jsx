@@ -100,6 +100,11 @@ const CategoryCreate = () => {
         Loading session...
       </div>;
   }
+  if (session.user.role !== "admin") {
+    return <div className="min-h-screen flex justify-center items-center text-indigo-500">
+        Only Admin is Allowed for this Route
+      </div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white px-4 py-12">
