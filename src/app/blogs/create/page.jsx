@@ -2,19 +2,24 @@
 
 import ImageUploader from "@/components/ImageUploader";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState, useRef } from "react";
 import { toast } from "react-hot-toast";
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 const CreateBlog = () => {
+
+   const { data: session, status } = useSession();
+
   const editor = useRef(null);
 
   const [formData, setFormData] = useState({
     title: "",
     slug: "",
     category: "",
-    author: "",
+    authorid: session.user.id,
     featuredImage: "",
     blogcontent: "",
   });
@@ -48,15 +53,14 @@ const CreateBlog = () => {
       });
 
       toast.success(res.data.message || "Blog created successfully!");
-      setFormData({
-        title: "",
-        slug: "",
-        category: "",
-        author: "",
-        featuredImage: "",
-        blogcontent: "",
-      });
-      setImageUrl("");
+      // setFormData({
+      //   title: "",
+      //   slug: "",
+      //   category: "",
+      //   featuredImage: "",
+      //   blogcontent: "",
+      // });
+      // setImageUrl("");
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Something went wrong.");
@@ -107,16 +111,6 @@ const CreateBlog = () => {
             name="slug"
             placeholder="Slug (e.g., my-awesome-post)"
             value={formData.slug}
-            onChange={handleChange}
-            className="p-3 bg-gray-800 text-white placeholder-gray-400 border border-gray-600 rounded-md"
-            required
-          />
-
-          <input
-            type="text"
-            name="author"
-            placeholder="Author Name"
-            value={formData.author}
             onChange={handleChange}
             className="p-3 bg-gray-800 text-white placeholder-gray-400 border border-gray-600 rounded-md"
             required

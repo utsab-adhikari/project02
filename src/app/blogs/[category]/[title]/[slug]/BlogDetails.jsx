@@ -14,7 +14,8 @@ import dayjs from "dayjs"; // For date formatting
 import RelatedBlog from "./RelatedBlogs";
 
 const BlogDetails = ({ category, title, slug }) => {
-  const [blog, setBlog] = useState(null);
+  const [blog, setBlog] = useState("");
+  const [author, setAuthor] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -23,6 +24,7 @@ const BlogDetails = ({ category, title, slug }) => {
         const res = await axios.get(`/api/blog/${category}/${title}/${slug}`);
         if (res.data?.blog) {
           setBlog(res.data.blog);
+          setAuthor(res.data.author);
         } else {
           toast.error("Blog not found.");
         }
@@ -91,28 +93,35 @@ const BlogDetails = ({ category, title, slug }) => {
             <span className="flex items-center gap-2 bg-indigo-600/20 px-4 py-2 rounded-full text-indigo-200 font-medium shadow-sm">
               <FaTag className="text-base" /> Category: {blog.category}
             </span>
-            <span className="flex items-center gap-2 bg-gray-700 px-4 py-2 rounded-full text-gray-300 font-medium shadow-sm">
-              <FaUserEdit className="text-base" /> By: {blog.author}
-            </span>
+           <a
+  href={`/profile/${author.email}`}
+  className="flex items-center gap-2 bg-gray-700 px-4 py-2 rounded-full text-gray-300 font-medium shadow-sm hover:bg-gray-600 hover:text-white transition duration-200"
+>
+  <img
+    src={author?.image || "https://placehold.co/32x32/2D3748/FFFFFF?text=U"}
+    alt={author?.name || "Author"}
+    className="w-6 h-6 rounded-full object-cover border border-gray-600"
+    onError={(e) => {
+      e.currentTarget.onerror = null;
+      e.currentTarget.src = "https://placehold.co/32x32/2D3748/FFFFFF?text=U";
+    }}
+  />
+  <span className="text-sm font-medium">
+    {author?.name || blog.author}
+  </span>
+</a>
+
             {blog.createdAt && (
               <span className="flex items-center gap-2 bg-gray-700 px-4 py-2 rounded-full text-gray-300 font-medium shadow-sm">
                 <FaCalendarAlt className="text-base" /> Published:{" "}
                 {dayjs(blog.createdAt).format("MMM DD, YYYY")}
               </span>
             )}
-            {/* Slug is typically for URL, not always displayed. Keeping it optional. */}
-            {/* <span className="px-3 py-1 rounded-full text-gray-500">
-              Slug: {blog.slug}
-            </span> */}
           </div>
-
-          {/* Blog Content */}
           <article
             className="prose prose-invert prose-lg max-w-none text-gray-200 leading-relaxed space-y-6"
             dangerouslySetInnerHTML={{ __html: blog.blogcontent }}
           />
-
-          {/* Footer Note */}
           <div className="mt-16 p-6 bg-gradient-to-r from-indigo-900/30 to-purple-900/30 border border-indigo-700 rounded-lg shadow-xl text-center">
             <h3 className="text-indigo-300 text-2xl font-bold mb-3">
               Thank you for reading!

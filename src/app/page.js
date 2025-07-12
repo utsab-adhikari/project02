@@ -15,9 +15,6 @@ const LandingPage = () => {
 
   const { data: session, status } = useSession();
 
-  console.log(session);
-  console.log(status);
-
   useEffect(() => {
     const getBlogs = async () => {
       try {

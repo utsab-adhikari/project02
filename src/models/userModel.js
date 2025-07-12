@@ -15,6 +15,9 @@ const UserSchema = new mongoose.Schema({
   bio: {
     type: String,
   },
+  contact: {
+    type: Number,
+  },
 
 }, {timestamps: true});
 
