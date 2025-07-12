@@ -117,7 +117,7 @@ export default function ProfileUpdatePage() {
               value={contact}
               onChange={(e) => setContact(e.target.value)}
               className="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="e.g. +9779867508725"
+              placeholder="e.g. +9779867500000"
             />
           </div>
 

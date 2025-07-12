@@ -10,8 +10,7 @@ import { toast } from "react-hot-toast";
 const JoditEditor = dynamic(() => import("jodit-react"), { ssr: false });
 
 const CreateBlog = () => {
-
-   const { data: session, status } = useSession();
+  const { data: session, status } = useSession();
 
   const editor = useRef(null);
 
@@ -19,7 +18,7 @@ const CreateBlog = () => {
     title: "",
     slug: "",
     category: "",
-    authorid: session.user.id,
+    authorid: "",
     featuredImage: "",
     blogcontent: "",
   });
@@ -36,6 +35,15 @@ const CreateBlog = () => {
   const handleEditorChange = (value) => {
     setFormData((prev) => ({ ...prev, blogcontent: value }));
   };
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      setFormData((prev) => ({
+        ...prev,
+        authorid: session.user.id,
+      }));
+    }
+  }, [session]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,6 +96,22 @@ const CreateBlog = () => {
     getCategories();
   }, []);
 
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-indigo-500">
+        Loading session...
+      </div>
+    );
+  }
+
+  if (!session?.user) {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-red-500 font-bold">
+        You must be logged in to create a blog.
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0f172a] text-white px-4 py-10">
       <div className="max-w-5xl mx-auto">
@@ -95,7 +119,10 @@ const CreateBlog = () => {
           Create New Blog
         </h2>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+        >
           <input
             type="text"
             name="title"
@@ -118,7 +145,9 @@ const CreateBlog = () => {
 
           {/* Category Select */}
           <div className="sm:col-span-2">
-            <label className="block mb-2 font-medium text-gray-300">Select Category</label>
+            <label className="block mb-2 font-medium text-gray-300">
+              Select Category
+            </label>
             <select
               name="category"
               value={formData.category}
@@ -137,7 +166,9 @@ const CreateBlog = () => {
 
           {/* Image Upload */}
           <div className="sm:col-span-2">
-            <label className="block mb-2 font-medium text-gray-300">Featured Image</label>
+            <label className="block mb-2 font-medium text-gray-300">
+              Featured Image
+            </label>
             <ImageUploader onUpload={handleImageUpload} />
             {imageUrl && (
               <img
@@ -150,7 +181,9 @@ const CreateBlog = () => {
 
           {/* Jodit Rich Text Editor */}
           <div className="sm:col-span-2">
-            <label className="block mb-2 font-medium text-gray-300">Blog Content</label>
+            <label className="block mb-2 font-medium text-gray-300">
+              Blog Content
+            </label>
             <div className="bg-gray-900 border border-gray-700 rounded-md overflow-hidden">
               <JoditEditor
                 ref={editor}
@@ -167,9 +200,12 @@ const CreateBlog = () => {
 
           {/* Info Section */}
           <div className="sm:col-span-2 bg-white/5 border border-white/10 p-5 rounded-md">
-            <h3 className="font-semibold text-indigo-300 mb-2">Why this blog stands out?</h3>
+            <h3 className="font-semibold text-indigo-300 mb-2">
+              Why this blog stands out?
+            </h3>
             <p className="text-sm text-gray-300">
-              Highlight originality, depth of knowledge, and value. Be professional, insightful, and useful to your audience.
+              Highlight originality, depth of knowledge, and value. Be
+              professional, insightful, and useful to your audience.
             </p>
           </div>
 
@@ -179,7 +215,9 @@ const CreateBlog = () => {
               type="submit"
               disabled={submitting}
               className={`w-full py-3 rounded-md text-white font-medium transition duration-200 ${
-                submitting ? "bg-gray-500 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+                submitting
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700"
               }`}
             >
               {submitting ? "Publishing..." : "Publish Blog"}

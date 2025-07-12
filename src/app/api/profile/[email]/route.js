@@ -53,7 +53,9 @@ export async function PUT(request, { params }) {
 
         const { email }= await params;
 
-        const {bio, contact} = request.json();
+        const {bio, contact} = await request.json();
+
+        console.log(bio);
 
         if(!email) {
             return NextResponse.json({
@@ -72,6 +74,7 @@ export async function PUT(request, { params }) {
             message: "Profile Not Found", 
         })
         }
+        console.log(profile);
 
         await User.findByIdAndUpdate(profile._id, {
             bio: bio,
