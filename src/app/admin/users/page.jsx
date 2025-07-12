@@ -74,7 +74,7 @@ const Page = () => {
               >
                 <div className="flex items-center space-x-4">
                   <img
-                    src={user.avatar || "/default-avatar.png"}
+                    src={user.image || "/default-avatar.png"}
                     alt="avatar"
                     className="w-16 h-16 rounded-full object-cover border-2 border-white"
                   />
