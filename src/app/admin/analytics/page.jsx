@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Import useEffect
 import useSWR from "swr";
 import dynamic from "next/dynamic"; // Import dynamic for client-side rendering
 import Loader from "@/components/Loader"; // Assuming you have a Loader component
@@ -82,6 +82,11 @@ const PIE_COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#00c49f", "#ffb
 
 export default function AnalyticsDashboard() {
   const { data, error } = useSWR("/api/admin/analytic", fetcher);
+  const [mounted, setMounted] = useState(false); // State to track if component is mounted
+
+  useEffect(() => {
+    setMounted(true); // Set mounted to true after initial render
+  }, []);
 
   if (error) return <p className="text-red-400 p-8">Failed to load analytics. Please check your API keys and network connection.</p>;
   if (!data) return <Loader />; // Display a loader while data is being fetched
@@ -168,6 +173,23 @@ export default function AnalyticsDashboard() {
           </ResponsiveContainer>
         </div>
 
+        {/* NEW: Top Pages List */}
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-200 mb-4">Top Pages List (Last 7 Days)</h2>
+          <ul className="space-y-2 max-h-80 overflow-y-auto custom-scrollbar">
+            {topPages.length > 0 ? (
+              topPages.map((p, i) => (
+                <li key={i} className="flex justify-between items-center text-gray-300 border-b border-gray-700 pb-2 last:border-b-0">
+                  <span className="flex-1 truncate pr-2 text-sm sm:text-base">{p.path}</span>
+                  <span className="font-medium text-purple-300 text-sm sm:text-base">{p.views} views</span>
+                </li>
+              ))
+            ) : (
+              <li className="text-center text-gray-400 py-4">No top pages data available.</li>
+            )}
+          </ul>
+        </div>
+
         {/* Device Usage Chart */}
         <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-200 mb-4">Device Usage (Last 7 Days)</h2>
@@ -228,8 +250,8 @@ export default function AnalyticsDashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
           {/* Map Container */}
           <div>
-            {/* Render MapContainer only if window is defined */}
-            {typeof window !== 'undefined' && (
+            {/* Render MapContainer only if mounted is true */}
+            {mounted && (
               <MapContainer
                 center={[20, 0]} // Center of the world
                 zoom={2}
@@ -277,9 +299,9 @@ export default function AnalyticsDashboard() {
                 {locations.length > 0 ? (
                   locations.map((loc, i) => (
                     <tr key={i} className="border-b border-gray-600 last:border-b-0 hover:bg-gray-600 transition-colors">
-                      <td className="py-2 px-4">{loc.country}</td>
-                      <td className="py-2 px-4">{loc.city}</td>
-                      <td className="py-2 px-4">{loc.users}</td>
+                      <td className="py-2 px-4 text-sm sm:text-base">{loc.country}</td>
+                      <td className="py-2 px-4 text-sm sm:text-base">{loc.city}</td>
+                      <td className="py-2 px-4 text-sm sm:text-base">{loc.users}</td>
                     </tr>
                   ))
                 ) : (
