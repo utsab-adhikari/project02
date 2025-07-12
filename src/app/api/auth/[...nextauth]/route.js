@@ -19,9 +19,15 @@ export const authOptions = {
   callbacks: {
     async session({ session }) {
       await connectDB();
-      const user = await User.findOne({ email: session.user.email });
-      session.user.id = user._id;
-      session.user.role = user.role;
+     if (session?.user?.email) {
+        const user = await User.findOne({ email: session.user.email });
+        if (user) {
+          session.user.id = user._id.toString(); 
+          session.user.name = user.name;
+          session.user.image = user.image;
+          session.user.role = user.role;
+        }
+      }
       return session;
     },
     async signIn({ user }) {

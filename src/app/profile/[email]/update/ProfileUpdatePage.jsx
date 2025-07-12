@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { FaSpinner, FaSave } from "react-icons/fa";
+import ImageUploader from "@/components/ImageUploader";
 
 export default function ProfileUpdatePage() {
   const { email } = useParams();
@@ -15,6 +16,7 @@ export default function ProfileUpdatePage() {
   const [bio, setBio] = useState("");
   const [contact, setContact] = useState("");
   const [updating, setUpdating] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -44,6 +46,10 @@ export default function ProfileUpdatePage() {
     fetchProfile();
   }, [email]);
 
+  const handleImageUpload = (url) => {
+    setImageUrl(url);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!bio && !contact) {
@@ -55,7 +61,7 @@ export default function ProfileUpdatePage() {
     try {
       await axios.put(
         `/api/profile/${email}`,
-        { bio, contact },
+        { bio, contact, image:imageUrl },
         { withCredentials: true }
       );
       toast.success("Profile updated successfully.");
@@ -91,7 +97,20 @@ export default function ProfileUpdatePage() {
         <h2 className="text-2xl font-bold mb-6 text-center">Update Profile</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Bio */}
+          <div className="flex flex-col items-center  justify-center sm:col-span-2 mx-auto">
+            <label className="block mb-2 font-medium text-gray-300">
+              Image
+            </label>
+            <ImageUploader onUpload={handleImageUpload} />
+            {imageUrl && (
+              <img
+                src={imageUrl}
+                alt="Uploaded"
+                className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-indigo-500 mb-4"
+              />
+            )}
+          </div>
+
           <div>
             <label htmlFor="bio" className="block mb-1 font-medium">
               Bio
@@ -105,8 +124,6 @@ export default function ProfileUpdatePage() {
               placeholder="Write something about yourself..."
             />
           </div>
-
-          {/* Contact */}
           <div>
             <label htmlFor="contact" className="block mb-1 font-medium">
               Contact (Phone, WhatsApp, etc.)
@@ -120,8 +137,6 @@ export default function ProfileUpdatePage() {
               placeholder="e.g. +9779867500000"
             />
           </div>
-
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={updating}

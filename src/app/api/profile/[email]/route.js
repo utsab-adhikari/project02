@@ -53,9 +53,7 @@ export async function PUT(request, { params }) {
 
         const { email }= await params;
 
-        const {bio, contact} = await request.json();
-
-        console.log(bio);
+        const {bio, contact, image, name} = await request.json();
 
         if(!email) {
             return NextResponse.json({
@@ -79,6 +77,8 @@ export async function PUT(request, { params }) {
         await User.findByIdAndUpdate(profile._id, {
             bio: bio,
             contact:  contact,
+            image: image,
+            name: name,
         });
 
         return NextResponse.json({
