@@ -13,24 +13,61 @@ export async function GET() {
   try {
     const prop = `properties/${process.env.GA_PROPERTY_ID}`;
 
-    // Real-time active users
+    // --- Real-time Active Users ---
     const [rt] = await analytics.runRealtimeReport({
       property: prop,
       metrics: [{ name: "activeUsers" }],
       dimensions: [{ name: "country" }, { name: "city" }],
     });
 
-    // Page views last 7 days
+    // --- Page Views Last 7 Days ---
     const [pv] = await analytics.runReport({
       property: prop,
       dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
       metrics: [{ name: "screenPageViews" }],
       dimensions: [{ name: "pagePath" }],
       orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
-      limit: 10,
+      limit: 10, // Top 10 pages
     });
 
-    return NextResponse.json({ realtime: rt, pages: pv });
+    // --- Overall Summary Metrics Last 7 Days ---
+    const [summary] = await analytics.runReport({
+      property: prop,
+      dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
+      metrics: [
+        { name: "newUsers" },
+        { name: "bounceRate" },
+        { name: "averageSessionDuration" },
+      ],
+    });
+
+    // --- Device Category Usage Last 7 Days ---
+    const [device] = await analytics.runReport({
+      property: prop,
+      dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
+      metrics: [{ name: "activeUsers" }],
+      dimensions: [{ name: "deviceCategory" }],
+      orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+    });
+
+    // --- Traffic Source Last 7 Days ---
+    const [source] = await analytics.runReport({
+      property: prop,
+      dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
+      metrics: [{ name: "activeUsers" }],
+      dimensions: [{ name: "sessionSource" }],
+      orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+      limit: 10, // Top 10 sources
+    });
+
+
+    return NextResponse.json({
+      realtime: rt,
+      pages: pv,
+      summary: summary,
+      device: device,
+      source: source,
+    });
   } catch (err) {
     console.error("Analytics fetch error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
