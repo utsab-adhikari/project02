@@ -13,6 +13,7 @@ export default function ProfileUpdatePage() {
 
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   const [contact, setContact] = useState("");
   const [updating, setUpdating] = useState(false);
@@ -34,6 +35,7 @@ export default function ProfileUpdatePage() {
           setProfile(res.data.profile);
           setBio(res.data.profile.bio || "");
           setContact(res.data.profile.contact || "");
+          setName(res.data.profile.name);
         }
       } catch (err) {
         toast.error("Failed to load profile.");
@@ -61,7 +63,7 @@ export default function ProfileUpdatePage() {
     try {
       await axios.put(
         `/api/profile/${email}`,
-        { bio, contact, image:imageUrl },
+        { bio, contact, image:imageUrl, name:name },
         { withCredentials: true }
       );
       toast.success("Profile updated successfully.");
@@ -109,6 +111,19 @@ export default function ProfileUpdatePage() {
                 className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-indigo-500 mb-4"
               />
             )}
+          </div>
+          <div>
+            <label htmlFor="name" className="block mb-1 font-medium">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="e.g. +9779867500000"
+            />
           </div>
 
           <div>
