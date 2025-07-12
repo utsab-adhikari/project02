@@ -91,7 +91,7 @@ const CategoryCreate = () => {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.push("/auth/login");
     }
   }, [status, router]);
 
@@ -100,7 +100,7 @@ const CategoryCreate = () => {
         Loading session...
       </div>;
   }
-  if (session.user.role !== "admin") {
+  if (session && session.user.role !== "admin") {
     return <div className="min-h-screen flex justify-center items-center text-indigo-500">
         Only Admin is Allowed for this Route
       </div>;
