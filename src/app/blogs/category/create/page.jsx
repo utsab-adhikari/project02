@@ -6,8 +6,13 @@ import { toast } from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const CategoryCreate = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const [catLoading, setCatLoading] = useState(false);
@@ -62,7 +67,9 @@ const CategoryCreate = () => {
   };
 
   const handleDelete = async (catid) => {
-    const confirm = window.confirm("Are you sure you want to delete this Category?");
+    const confirm = window.confirm(
+      "Are you sure you want to delete this Category?"
+    );
     if (!confirm) return;
     setDeleteLoading(catid);
     const toastId = toast.loading("Deleting category...");
@@ -81,6 +88,18 @@ const CategoryCreate = () => {
       setDeleteLoading(null);
     }
   };
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading") {
+    return <div className="min-h-screen flex justify-center items-center text-indigo-500">
+        Loading session...
+      </div>;
+  }
 
   return (
     <div className="min-h-screen bg-[#0f172a] text-white px-4 py-12">

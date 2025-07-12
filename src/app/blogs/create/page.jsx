@@ -13,6 +13,7 @@ const CreateBlog = () => {
   const { data: session, status } = useSession();
 
   const editor = useRef(null);
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -35,15 +36,18 @@ const CreateBlog = () => {
   const handleEditorChange = (value) => {
     setFormData((prev) => ({ ...prev, blogcontent: value }));
   };
-
+  
   useEffect(() => {
+     if (status === "unauthenticated") {
+      router.push("/login");
+    };
     if (session?.user?.id) {
       setFormData((prev) => ({
         ...prev,
         authorid: session.user.id,
       }));
     }
-  }, [session]);
+  }, [session, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,19 +65,20 @@ const CreateBlog = () => {
       });
 
       toast.success(res.data.message || "Blog created successfully!");
-      // setFormData({
-      //   title: "",
-      //   slug: "",
-      //   category: "",
-      //   featuredImage: "",
-      //   blogcontent: "",
-      // });
-      // setImageUrl("");
+      setFormData({
+        title: "",
+        slug: "",
+        category: "",
+        featuredImage: "",
+        blogcontent: "",
+      });
+      setImageUrl("");
     } catch (err) {
       console.error(err);
       toast.error(err.response?.data?.message || "Something went wrong.");
     } finally {
       setSubmitting(false);
+      router.push("/blogs");
     }
   };
 
@@ -100,14 +105,6 @@ const CreateBlog = () => {
     return (
       <div className="min-h-screen flex justify-center items-center text-indigo-500">
         Loading session...
-      </div>
-    );
-  }
-
-  if (!session?.user) {
-    return (
-      <div className="min-h-screen flex justify-center items-center text-red-500 font-bold">
-        You must be logged in to create a blog.
       </div>
     );
   }

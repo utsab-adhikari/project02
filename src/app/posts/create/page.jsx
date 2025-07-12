@@ -1,13 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import ImageUploader from "@/components/ImageUploader";
 import { redirect } from "next/dist/server/api-utils";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const PostCreate = () => {
+  const { data: session, status } = useSession();
+
   const [formData, setFormData] = useState({
     author: "",
     title: "",
@@ -73,12 +76,29 @@ const PostCreate = () => {
     }
   };
 
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex justify-center items-center text-indigo-500">
+        Loading session...
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen px-4 py-10 bg-gray-900 text-white">
       <div className="max-w-3xl mx-auto bg-gray-800 p-8 rounded-lg shadow-lg">
         <h2 className="text-3xl font-bold text-center mb-6">Create New Post</h2>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 sm:grid-cols-2 gap-6"
+        >
           <input
             type="text"
             name="author"
@@ -111,7 +131,9 @@ const PostCreate = () => {
 
           {/* Featured Image Upload */}
           <div className="sm:col-span-2">
-            <label className="block mb-2 font-medium text-gray-300">Featured Image</label>
+            <label className="block mb-2 font-medium text-gray-300">
+              Featured Image
+            </label>
             <ImageUploader onUpload={handleImageUpload} />
             {imageUrl && (
               <img
@@ -141,7 +163,9 @@ const PostCreate = () => {
               type="submit"
               disabled={loading}
               className={`w-full py-3 rounded-md text-white font-medium transition duration-200 ${
-                loading ? "bg-gray-500 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+                loading
+                  ? "bg-gray-500 cursor-not-allowed"
+                  : "bg-indigo-600 hover:bg-indigo-700"
               }`}
             >
               {loading ? "Publishing..." : "Publish Post"}
