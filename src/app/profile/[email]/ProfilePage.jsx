@@ -74,7 +74,7 @@ export default function ProfilePage() {
     <div className="min-h-screen flex flex-col items-center justify-start px-4 py-10 text-white">
     <div className="bg-[#1e293b] border border-indigo-500/20 rounded-2xl p-6 sm:p-10 shadow-lg w-full max-w-xl text-center mx-auto">
   <img
-    src={profile.image || "/default-avatar.png"}
+    src={profile.image}
     alt="Profile"
     className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-indigo-500 mb-4"
   />

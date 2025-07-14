@@ -98,7 +98,7 @@ const BlogDetails = ({ category, title, slug }) => {
   className="flex items-center gap-2 bg-gray-700 px-4 py-2 rounded-full text-gray-300 font-medium shadow-sm hover:bg-gray-600 hover:text-white transition duration-200"
 >
   <img
-    src={author?.image || "https://placehold.co/32x32/2D3748/FFFFFF?text=U"}
+    src={author?.image}
     alt={author?.name || "Author"}
     className="w-6 h-6 rounded-full object-cover border border-gray-600"
     onError={(e) => {
