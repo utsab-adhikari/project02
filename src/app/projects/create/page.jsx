@@ -63,11 +63,12 @@ export default function CreateProject() {
       }
 
       const project = await res.json();
-      router.push(`/projects/${project._id}`);
+      // router.push(`/projects/${project._id}`);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
+      router.push("/projects")
     }
   };
 

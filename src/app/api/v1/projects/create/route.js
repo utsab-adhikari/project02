@@ -1,9 +1,9 @@
 // app/api/projects/route.js
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import Project from '@/models/Project';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import connectDB from '@/db/ConnectDB';
+import Project from '@/models/projectModel';
 
 export async function POST(req) {
   await connectDB();
