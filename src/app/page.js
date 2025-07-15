@@ -5,15 +5,28 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import { toast, Toaster } from "react-hot-toast"; // Import Toaster for notifications
 import Link from "next/link"; // Assuming Next.js Link component
-import { FaArrowRight, FaCode, FaGraduationCap, FaLightbulb, FaEnvelope, FaUser, FaCommentDots, FaSpinner } from "react-icons/fa"; // Icons for various sections
+import {
+  FaArrowRight,
+  FaCode,
+  FaGraduationCap,
+  FaLightbulb,
+  FaEnvelope,
+  FaUser,
+  FaCommentDots,
+  FaSpinner,
+} from "react-icons/fa"; // Icons for various sections
+import Contact from "@/components/Contact";
+import About from "@/components/About";
+import NotLoggedIn from "@/components/NotLoggedIn";
 
 const LandingPage = () => {
+  const [loggedIn, setLoggedIn] = useState(false);
   const [blogs, setBlogs] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loadingBlogs, setLoadingBlogs] = useState(true);
   const [loadingCategories, setLoadingCategories] = useState(true);
 
-  const { data: session, status } = useSession();
+  const { status } = useSession();
 
   useEffect(() => {
     const getBlogs = async () => {
@@ -46,19 +59,31 @@ const LandingPage = () => {
     getCategories();
   }, []);
 
+  useEffect(() => {
+    if (status === "authenticated") {
+      setLoggedIn(true);
+    } else if (status === "unauthenticated") {
+      setLoggedIn(false);
+    }
+  }, [status]);
+
   return (
     <div className="bg-gray-900 text-white min-h-screen font-inter">
-      <Toaster position="top-center" reverseOrder={false} />
-
-      {/* Hero Section */}
       <section className="relative overflow-hidden py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 to-indigo-950 shadow-2xl">
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/cubes.png")' }}></div> {/* Subtle background pattern */}
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              'url("https://www.transparenttextures.com/patterns/cubes.png")',
+          }}
+        ></div>{" "}
         <div className="relative max-w-4xl mx-auto text-center z-10">
           <h1 className="text-5xl sm:text-6xl font-extrabold mb-6 leading-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 drop-shadow-lg animate-fade-in-down">
             Welcome to DevBlogs
           </h1>
           <p className="text-xl sm:text-2xl max-w-3xl mx-auto text-gray-300 mb-8 animate-fade-in-up">
-            Your hub for cutting-edge insights, shared knowledge, and vibrant discussions across technology, education, and beyond.
+            Your hub for cutting-edge insights, shared knowledge, and vibrant
+            discussions across technology, education, and beyond.
           </p>
           <div className="flex justify-center gap-4 animate-fade-in-up delay-200">
             <Link
@@ -67,17 +92,18 @@ const LandingPage = () => {
             >
               Explore Blogs <FaArrowRight className="ml-2" />
             </Link>
-            <Link
-              href="/posts/create"
-              className="inline-flex items-center px-8 py-3 border border-indigo-500 text-indigo-300 font-semibold rounded-full shadow-lg hover:bg-indigo-500 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
-            >
-              Write a Post <FaCode className="ml-2" />
-            </Link>
+            {loggedIn && (
+              <Link
+                href="/blogs/create"
+                className="inline-flex items-center px-8 py-3 border border-indigo-500 text-indigo-300 font-semibold rounded-full shadow-lg hover:bg-indigo-500 hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+              >
+                Write a Blog <FaCode className="ml-2" />
+              </Link>
+            )}
           </div>
         </div>
       </section>
 
-      {/* Latest Blogs Section */}
       <section className="px-4 py-16 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <h2 className="text-4xl font-extrabold text-center mb-12 text-indigo-400 drop-shadow-lg">
           Our Latest Insights
@@ -85,7 +111,9 @@ const LandingPage = () => {
         {loadingBlogs ? (
           <div className="flex flex-col items-center justify-center h-64 bg-[#1e1f21] rounded-xl shadow-lg border border-gray-700">
             <FaSpinner className="animate-spin text-indigo-500 text-5xl mb-4" />
-            <p className="text-gray-400 text-xl font-medium">Fetching the freshest blogs...</p>
+            <p className="text-gray-400 text-xl font-medium">
+              Fetching the freshest blogs...
+            </p>
           </div>
         ) : blogs.length === 0 ? (
           <div className="text-center p-12 bg-[#1e1f21] rounded-xl shadow-lg border border-gray-700 flex flex-col items-center justify-center">
@@ -109,7 +137,11 @@ const LandingPage = () => {
                     src={blog.featuredImage}
                     alt={blog.title}
                     className="h-48 w-full object-cover rounded-t-xl border-b border-gray-700"
-                    onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x200/333333/FFFFFF?text=Image+Unavailable"; }} // Fallback
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://placehold.co/600x200/333333/FFFFFF?text=Image+Unavailable";
+                    }} // Fallback
                   />
                 ) : (
                   <div className="h-48 w-full bg-gray-800 flex items-center justify-center rounded-t-xl border-b border-gray-700">
@@ -155,7 +187,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Categories Section */}
       <section className="bg-gray-800 px-4 py-16 sm:px-6 lg:px-8">
         <h2 className="text-4xl font-extrabold text-center mb-12 text-indigo-400 drop-shadow-lg">
           Explore Diverse Categories
@@ -167,7 +198,9 @@ const LandingPage = () => {
           </div>
         ) : categories.length === 0 ? (
           <div className="text-center p-8 bg-[#1e1f21] rounded-xl shadow-lg border border-gray-700">
-            <p className="text-gray-500 text-lg">No categories available yet.</p>
+            <p className="text-gray-500 text-lg">
+              No categories available yet.
+            </p>
           </div>
         ) : (
           <div className="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto">
@@ -184,92 +217,11 @@ const LandingPage = () => {
         )}
       </section>
 
-      {/* About Section */}
-      <section className="bg-gray-900 px-4 py-16 sm:px-6 lg:px-8 text-center">
-        <h2 className="text-4xl font-extrabold text-indigo-400 mb-8 drop-shadow-lg">
-          About DevBlogs
-        </h2>
-        <p className="max-w-4xl mx-auto text-gray-300 text-lg leading-relaxed mb-8">
-          DevBlogs is more than just a platform; it's a vibrant community where innovation meets inspiration. We empower developers, students, and enthusiasts to share their unique perspectives, groundbreaking projects, and valuable insights. Whether you're diving deep into web development, exploring the frontiers of AI, mastering engineering principles, or simply sharing compelling stories, DevBlogs provides the perfect space for you to publish, connect, and grow. Join us in shaping the future of knowledge sharing!
-        </p>
-        <div className="flex justify-center gap-6 mt-8">
-          <div className="flex flex-col items-center">
-            <FaCode className="text-indigo-400 text-5xl mb-3" />
-            <p className="text-gray-300 font-semibold">Technical Expertise</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <FaGraduationCap className="text-indigo-400 text-5xl mb-3" />
-            <p className="text-gray-300 font-semibold">Educational Insights</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <FaLightbulb className="text-indigo-400 text-5xl mb-3" />
-            <p className="text-gray-300 font-semibold">Creative Storytelling</p>
-          </div>
-        </div>
-      </section>
+      {!loggedIn && <NotLoggedIn />}
 
-      {/* Contact Section */}
-      <section className="bg-gray-800 px-4 py-16 sm:px-6 lg:px-8">
-        <h2 className="text-4xl font-extrabold text-center text-indigo-400 mb-12 drop-shadow-lg">
-          Get In Touch
-        </h2>
-        <form className="max-w-2xl mx-auto grid gap-6 p-8 bg-[#1e1f21] rounded-xl shadow-2xl border border-gray-700">
-          <div className="relative">
-            <input
-              type="text"
-              id="name"
-              placeholder=" "
-              className="peer p-4 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full transition-all duration-300"
-            />
-            <label
-              htmlFor="name"
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base transition-all duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-400"
-            >
-              Your Name
-            </label>
-            <FaUser className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" />
-          </div>
+      <About />
 
-          <div className="relative">
-            <input
-              type="email"
-              id="email"
-              placeholder=" "
-              className="peer p-4 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full transition-all duration-300"
-            />
-            <label
-              htmlFor="email"
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-base transition-all duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-400"
-            >
-              Your Email
-            </label>
-            <FaEnvelope className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500" />
-          </div>
-
-          <div className="relative">
-            <textarea
-              id="message"
-              placeholder=" "
-              rows={6}
-              className="peer p-4 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-transparent focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full transition-all duration-300 resize-y"
-            />
-            <label
-              htmlFor="message"
-              className="absolute left-4 top-4 text-gray-400 text-base transition-all duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-focus:top-3 peer-focus:text-xs peer-focus:text-indigo-400"
-            >
-              Your Message
-            </label>
-            <FaCommentDots className="absolute right-4 top-4 text-gray-500" />
-          </div>
-
-          <button
-            type="submit"
-            className="mt-4 inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold rounded-lg shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
-          >
-            Send Message <FaArrowRight className="ml-2" />
-          </button>
-        </form>
-      </section>
+      <Contact />
     </div>
   );
 };
