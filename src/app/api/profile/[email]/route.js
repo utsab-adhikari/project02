@@ -50,7 +50,7 @@ export async function PUT(request, { params }) {
 
     const { email } = await params;
 
-    const { bio, contact, image, name } = await request.json();
+    const { bio, contact, image, name, facebook, github } = await request.json();
 
     if (!email) {
       return NextResponse.json({
@@ -75,6 +75,8 @@ export async function PUT(request, { params }) {
       contact: contact,
       image: image,
       name: name,
+      facebook: facebook,
+      github: github,
     });
 
     await Blog.updateMany(

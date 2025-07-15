@@ -15,6 +15,8 @@ export default function ProfileUpdatePage() {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [github, setGithub] = useState("");
   const [contact, setContact] = useState("");
   const [updating, setUpdating] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
@@ -35,6 +37,8 @@ export default function ProfileUpdatePage() {
           setProfile(res.data.profile);
           setBio(res.data.profile.bio || "");
           setContact(res.data.profile.contact || "");
+          setFacebook(res.data.profile.facebook || "");
+          setGithub(res.data.profile.github || "");
           setName(res.data.profile.name);
         }
       } catch (err) {
@@ -150,6 +154,32 @@ export default function ProfileUpdatePage() {
               onChange={(e) => setContact(e.target.value)}
               className="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="e.g. +9779867500000"
+            />
+          </div>
+           <div>
+            <label htmlFor="contact" className="block mb-1 font-medium">
+              Facebook
+            </label>
+            <input
+              type="url"
+              id="facebook"
+              value={facebook}
+              onChange={(e) => setFacebook(e.target.value)}
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="e.g. https://facebook.com"
+            />
+          </div>
+           <div>
+            <label htmlFor="contact" className="block mb-1 font-medium">
+              Github
+            </label>
+            <input
+              type="url"
+              id="facebook"
+              value={github}
+              onChange={(e) => setGithub(e.target.value)}
+              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="e.g. https://github.com/username"
             />
           </div>
           <button

@@ -18,6 +18,12 @@ const UserSchema = new mongoose.Schema({
   contact: {
     type: Number,
   },
+  facebook: {
+    type: String,
+  },
+  github: {
+    type: String,
+  }
 
 }, {timestamps: true});
 
