@@ -54,6 +54,7 @@ export async function POST(req, { params }) {
   try {
     await connectDB();
     const session = await getServerSession(authOptions);
+    const { category, title, slug } = await params;
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -63,7 +64,6 @@ export async function POST(req, { params }) {
     }
 
     const user = await User.findOne({ email: session.user.email });
-    const { category, title, slug } = params;
 
     const cat = await Category.findOne({ category });
     if (!cat) {

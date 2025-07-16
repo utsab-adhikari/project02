@@ -35,6 +35,8 @@ const BlogDetails = ({ category, title, slug }) => {
   const [loading, setLoading] = useState(true);
   const [likes, setLikes] = useState(0);
   const [views, setViews] = useState(0);
+  const [liked, setLiked] = useState();
+  const [isLikeLoading, setLikeLoading] = useState("");
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -59,14 +61,19 @@ const BlogDetails = ({ category, title, slug }) => {
   }, [category, title, slug]);
 
   const handleLike = async () => {
+    setLikeLoading("Loading");
+
     if (status === "unauthenticated") {
       toast.error("Please login first");
     } else if (status === "authenticated") {
       try {
-        await axios.post(`/api/blog/${category}/${title}/${slug}`);
-        setLikes((prev) => prev + 1);
+        const res = await axios.post(`/api/blog/${category}/${title}/${slug}`);
+        setLikes(res.data.likes);
+        setLiked(res.data.liked);
       } catch (err) {
         toast.error("Failed to like the post.", err);
+      } finally {
+        setLikeLoading("");
       }
     }
   };
@@ -155,7 +162,12 @@ const BlogDetails = ({ category, title, slug }) => {
             onClick={handleLike}
             className="flex items-center gap-2 text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-md transition"
           >
-            <FaHeart /> Like
+            {isLikeLoading === "Loading" ? (
+              <FaSpinner className="animate-spin"/>
+            ) : (
+              <FaHeart className={`${liked ? "text-red-600" : "text-white"}`} />
+            )}
+            {liked ? <>Liked</> : <>Like</>}
           </button>
           <button
             onClick={() =>
