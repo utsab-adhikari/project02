@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 export default function ProfileUpdatePage() {
   const { data: session, status } = useSession();
   const { email } = useParams();
-  const decodedEmail = email.replace('%40', '@');
+  const decodedEmail = email.replace("%40", "@");
   const router = useRouter();
 
   const [profile, setProfile] = useState(null);
@@ -24,13 +24,16 @@ export default function ProfileUpdatePage() {
   const [updating, setUpdating] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [thief, setThief] = useState("");
+  useEffect(() => {
+    if (session?.user?.email !== decodedEmail) {
+      toast.error("Unauthorized access.");
+      setThief(":::::");
+      router.replace("/");
+    }
+  }, [status, session, decodedEmail, router]);
 
   useEffect(() => {
     if (!email) return;
-    if (session?.user?.email !== decodedEmail) {
-      setThief(":::::");
-      router.push("/");
-    }
     const fetchProfile = async () => {
       setLoading(true);
       try {
