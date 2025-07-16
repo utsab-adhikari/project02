@@ -22,7 +22,7 @@ export default function GoogleLoginPage() {
     <div className="flex flex-col items-center justify-center">
       <div className="">
           <button
-            onClick={() => signIn("google", { callbackUrl: "/" })}
+            onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
             className=" px-4 py-2 bg-white rounded-sm cursor-pointer hover:bg-gray-200 flex text-black gap-4 items-center justify-between"
           >
             <FcGoogle size={24} />
