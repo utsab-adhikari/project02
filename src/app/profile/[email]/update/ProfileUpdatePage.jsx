@@ -25,10 +25,12 @@ export default function ProfileUpdatePage() {
   const [imageUrl, setImageUrl] = useState("");
   const [thief, setThief] = useState("");
   useEffect(() => {
-    if (session?.user?.email !== decodedEmail) {
-      toast.error("Unauthorized access.");
-      setThief(":::::");
-      router.replace("/");
+    if (status === "authenticated") {
+      if (session?.user?.email !== decodedEmail) {
+        toast.error("Unauthorized access.");
+        setThief(":::::");
+        router.replace("/");
+      }
     }
   }, [status, session, decodedEmail, router]);
 
