@@ -242,7 +242,7 @@ const BlogDetails = ({ category, title, slug }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center">
+      <div className="min-h-screen text-white flex flex-col items-center justify-center">
         <FaSpinner className="animate-spin text-indigo-500 text-6xl mb-4" />
         <p className="text-xl text-gray-400">Loading blog details...</p>
       </div>
@@ -251,7 +251,7 @@ const BlogDetails = ({ category, title, slug }) => {
 
   if (!blog) {
     return (
-      <div className="min-h-screen bg-gray-900 text-red-400 flex flex-col items-center justify-center">
+      <div className="min-h-screen text-red-400 flex flex-col items-center justify-center">
         <FaExclamationCircle className="text-red-500 text-6xl mb-4" />
         <p className="text-xl font-semibold">Blog not found.</p>
         <p className="text-gray-400 text-center">
@@ -262,7 +262,7 @@ const BlogDetails = ({ category, title, slug }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen text-white px-4 sm:px-6 lg:px-8 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Featured Image */}
         {blog.featuredImage ? (
