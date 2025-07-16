@@ -161,7 +161,7 @@ const BlogDetails = ({ category, title, slug }) => {
     }));
   };
 
-  // Handle comment submission
+  if(status === "authenticated") {
   const handleCommentSubmit = async (e, blogId) => {
     e.preventDefault();
     const commentText = postInteractionState[blogId]?.commentInput.trim();
@@ -235,6 +235,9 @@ const BlogDetails = ({ category, title, slug }) => {
       }));
     }
   };
+} else if(status === "unauthenticated"){
+  toast.error("Please login first")
+}
 
   if (loading) {
     return (
