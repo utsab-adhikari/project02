@@ -5,7 +5,7 @@ import Comment from '@/models/commentModel';
 import connectDB from '@/db/ConnectDB';
 
 export async function GET(request, { params }) {
-  const { email } = params;
+  const { email } = await params;
 
   try {
     await connectDB();
@@ -15,7 +15,7 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const blogs = await Blog.find({ authorEmail: email }).sort({ createdAt: -1 });
+    const blogs = await Blog.find({ authorId: profile._id }).sort({ createdAt: -1 });
 
     const blogCount = blogs.length;
     const viewCount = blogs.reduce((acc, curr) => acc + (curr.views || 0), 0);
