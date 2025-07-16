@@ -12,7 +12,7 @@ export async function GET(req) {
   }
 
   try {
-    const comments = await Comment.find({ blogId, parentId: null }).populate("replies");
+    const comments = await Comment.find({ blogId, parentId: null }).sort({ createdAt: -1 });
 
     return NextResponse.json(comments, { status: 200 });
   } catch (error) {
