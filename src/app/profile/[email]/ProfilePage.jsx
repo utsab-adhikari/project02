@@ -130,7 +130,6 @@ const ProfileCard = ({ profile }) => {
           alt="Profile"
           className="w-36 h-36 rounded-full object-cover mx-auto border-4 border-indigo-600 shadow-xl transform transition-transform duration-300 hover:scale-105"
         />
-        <span className="absolute bottom-0 right-[calc(50%-50px)] sm:right-[calc(50%-50px)] bg-green-500 w-4 h-4 rounded-full border-2 border-gray-900"></span> {/* Online indicator */}
       </div>
 
       <h2 className="text-3xl sm:text-4xl font-extrabold text-indigo-300 mb-2 leading-tight">
@@ -189,7 +188,6 @@ const ProfileCard = ({ profile }) => {
         )}
       </div>
 
-      {/* Action Buttons (Update Profile, Share) */}
       <div className="flex flex-wrap justify-center gap-4 mt-8">
         {session?.user?.email === profile.email && ( // Check if the current user is viewing their own profile
           <Link

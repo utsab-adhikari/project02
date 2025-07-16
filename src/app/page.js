@@ -68,7 +68,7 @@ const LandingPage = () => {
   }, [status]);
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen font-inter">
+    <div className=" text-white min-h-screen font-inter">
       <section className="relative overflow-hidden py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 to-indigo-950 shadow-2xl">
         <div
           className="absolute inset-0 opacity-10"
@@ -109,7 +109,7 @@ const LandingPage = () => {
           Our Latest Insights
         </h2>
         {loadingBlogs ? (
-          <div className="flex flex-col items-center justify-center h-64 bg-[#1e1f21] rounded-xl shadow-lg border border-gray-700">
+          <div className="flex flex-col items-center justify-center h-64 bg-gray-900 rounded-xl shadow-lg border border-gray-700">
             <FaSpinner className="animate-spin text-indigo-500 text-5xl mb-4" />
             <p className="text-gray-400 text-xl font-medium">
               Fetching the freshest blogs...
@@ -187,7 +187,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section className="bg-gray-800 px-4 py-16 sm:px-6 lg:px-8">
+      <section className="bg-gray-900 px-4 py-16 sm:px-6 lg:px-8">
         <h2 className="text-4xl font-extrabold text-center mb-12 text-indigo-400 drop-shadow-lg">
           Explore Diverse Categories
         </h2>

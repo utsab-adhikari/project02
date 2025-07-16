@@ -101,7 +101,7 @@ export default function ProfileUpdatePage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex justify-center items-center bg-gray-900 text-indigo-400">
+      <div className="min-h-screen flex justify-center items-center text-indigo-400">
         <FaSpinner className="animate-spin text-4xl" />
         <span className="ml-4 text-xl">Loading session...</span>
       </div>
@@ -110,7 +110,7 @@ export default function ProfileUpdatePage() {
 
   if (thief === ":::::") {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-900 text-indigo-400">
+      <div className="flex justify-center items-center min-h-screen  text-indigo-400">
         <FaSpinner className="animate-spin text-4xl" />
       </div>
     );
@@ -118,7 +118,7 @@ export default function ProfileUpdatePage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-900 text-indigo-400">
+      <div className="flex justify-center items-center min-h-screen text-indigo-400">
         <FaSpinner className="animate-spin text-4xl" />
         <span className="ml-4 text-xl">Loading profile...</span>
       </div>
@@ -127,14 +127,14 @@ export default function ProfileUpdatePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex justify-center items-center bg-gray-900 text-center py-10 text-red-500 font-semibold text-xl">
+      <div className="min-h-screen flex justify-center items-center text-center py-10 text-red-500 font-semibold text-xl">
         Profile not available.
       </div>
     );
   }
   return (
-    <div className="min-h-screen flex flex-col items-center px-4 py-10 bg-gray-900 text-white">
-      <div className="bg-[#1e293b] border border-indigo-500/30 p-8 rounded-2xl w-full max-w-xl shadow-md">
+    <div className="min-h-screen flex flex-col items-center px-4 py-10 text-white">
+      <div className="bg-gray-900 border border-indigo-500/30 p-8 rounded-2xl w-full max-w-xl shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-center">Update Profile</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">

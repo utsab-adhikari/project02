@@ -3,7 +3,7 @@ import { FaCode, FaGraduationCap, FaLightbulb } from 'react-icons/fa'
 
 const About = () => {
   return (
-         <section className="bg-gray-900 px-4 py-16 sm:px-6 lg:px-8 text-center">
+         <section className=" px-4 py-16 sm:px-6 lg:px-8 text-center">
         <h2 className="text-4xl font-extrabold text-indigo-400 mb-8 drop-shadow-lg">
           About DevBlogs
         </h2>

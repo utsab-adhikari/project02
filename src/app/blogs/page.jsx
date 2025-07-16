@@ -35,7 +35,7 @@ const Blogs = () => {
   }, []);
 
   return (
-      <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-6 lg:p-8 font-inter">
+      <div className="min-h-screen text-white p-4 sm:p-6 lg:p-8 font-inter">
 
       <div className="max-w-7xl mx-auto">
         <h2 className="text-4xl font-extrabold text-center mb-12 text-indigo-400 drop-shadow-lg">
@@ -43,12 +43,12 @@ const Blogs = () => {
         </h2>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center h-64 bg-[#1e1f21] rounded-xl shadow-lg border border-gray-700">
+          <div className="flex flex-col items-center justify-center h-64 bg-gray-900 rounded-xl shadow-lg border border-gray-700">
             <FaSpinner className="animate-spin text-indigo-500 text-5xl mb-4" />
             <p className="text-gray-400 text-xl font-medium">Loading amazing blogs...</p>
           </div>
         ) : blogs.length === 0 ? (
-          <div className="text-center p-12 bg-[#1e1f21] rounded-xl shadow-lg border border-gray-700 flex flex-col items-center justify-center">
+          <div className="text-center p-12 bg-gray-900 rounded-xl shadow-lg border border-gray-700 flex flex-col items-center justify-center">
             <FaBookOpen className="text-indigo-400 text-6xl mb-6" />
             <p className="text-red-400 text-2xl font-semibold mb-2">
               No blogs available yet.
@@ -62,7 +62,7 @@ const Blogs = () => {
             {blogs.map((blog) => (
               <div
                 key={blog._id}
-                className="bg-[#1e1f21] border border-gray-700 rounded-xl shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 ease-in-out flex flex-col overflow-hidden transform hover:-translate-y-1"
+                className="bg-gray-900 border border-gray-700 rounded-xl shadow-lg hover:shadow-indigo-500/40 transition-all duration-300 ease-in-out flex flex-col overflow-hidden transform hover:-translate-y-1"
               >
                 {/* Featured Image */}
                 {blog.featuredImage ? (
