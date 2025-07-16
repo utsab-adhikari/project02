@@ -8,15 +8,15 @@ import { useSession } from "next-auth/react";
 
 const NotLoggedIn = () => {
   const [isVisible, setIsVisible] = useState(true);
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState("");
 
   const { status } = useSession();
 
   useEffect(() => {
     if (status === "authenticated") {
-      setLoggedIn(true);
+      setLoggedIn("authenticated");
     } else if (status === "unauthenticated") {
-      setLoggedIn(false);
+      setLoggedIn("unauthenticated");
     }
   }, [status]);
 
@@ -24,7 +24,7 @@ const NotLoggedIn = () => {
 
   return (
     <>
-      {!loggedIn && (
+      {loggedIn === "unauthenticated" && (
           <div className="fixed bottom-2 right-2 z-30 p-2 sm:p-4 max-w-[90vw] sm:max-w-md md:max-w-lg">
             <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 border border-white/40 bg-slate-600/10 backdrop-blur-md rounded-lg shadow-lg p-3 sm:p-4 text-white text-sm sm:text-base">
               <div className="flex-1">Authenticate for creating Blogs</div>

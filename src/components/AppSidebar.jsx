@@ -41,7 +41,7 @@ const createMenuItems = [
 ];
 
 const userItems = [
-  { title: "Login", url: "/auth/login", icon: LogIn },
+  { title: "Login", url: "/authenticate", icon: LogIn },
   { title: "Signup", url: "/signup", icon: UserRoundPlus },
 ];
 
