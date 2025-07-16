@@ -125,7 +125,7 @@ export default function AnalyticsDashboard() {
   })) || [];
 
   return (
-    <div className="p-4 sm:p-8 space-y-8 sm:space-y-10 bg-gray-900 min-h-screen text-gray-100 font-inter">
+    <div className="p-4 sm:p-8 space-y-8 sm:space-y-10 min-h-screen text-gray-100 font-inter">
       <h1 className="text-3xl sm:text-4xl font-bold mb-6 text-center sm:text-left">📈 Admin Analytics Dashboard</h1>
 
       {/* Key Metrics Section */}

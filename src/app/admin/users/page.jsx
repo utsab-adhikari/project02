@@ -54,7 +54,7 @@ const Page = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen p-4">
       <h1 className="text-3xl font-semibold mb-6 text-center text-gray-800 dark:text-white">
         👥 User Directory
       </h1>
