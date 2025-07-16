@@ -47,6 +47,7 @@ const BlogDetails = ({ category, title, slug }) => {
           setAuthor(res.data.author);
           setLikes(res.data.blog.likes || 0);
           setViews(res.data.blog.views || 0);
+          setLiked(res.data.liked);
         } else {
           toast.error("Blog not found.");
         }
@@ -163,7 +164,7 @@ const BlogDetails = ({ category, title, slug }) => {
             className="flex items-center gap-2 text-white bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-md transition"
           >
             {isLikeLoading === "Loading" ? (
-              <FaSpinner className="animate-spin"/>
+              <FaSpinner className="animate-spin" />
             ) : (
               <FaHeart className={`${liked ? "text-red-600" : "text-white"}`} />
             )}

@@ -9,6 +9,10 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 export async function GET(request, { params }) {
   try {
     await connectDB();
+    const session = await getServerSession(authOptions);
+    const user = await User.findOne({ email: session.user.email });
+
+
 
     const { category, title, slug } = await params;
 
@@ -31,6 +35,9 @@ export async function GET(request, { params }) {
       $inc: { views: 1 },
     });
 
+    const hasLiked = blog.likedBy.includes(user._id);
+
+
     const author = await User.findOne({ _id: blog.authorId });
 
     return NextResponse.json({
@@ -39,6 +46,7 @@ export async function GET(request, { params }) {
       message: "Blog fetched successfully",
       blog,
       author,
+      liked: hasLiked
     });
   } catch (error) {
     return NextResponse.json({
