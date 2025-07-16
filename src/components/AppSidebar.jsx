@@ -115,7 +115,7 @@ export function AppSidebar() {
               {isLoggedIn && (
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    onClick={() => signOut({ callbackUrl: "/auth/login" })}
+                    onClick={() => signOut({ callbackUrl: "/" })}
                     className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded w-full"
                   >
                     <span>Log Out</span>
