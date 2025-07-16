@@ -75,10 +75,12 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start px-4 py-10 bg-gray-900 text-white font-inter">
-
       <div className="bg-gray-800 border border-indigo-600/30 rounded-3xl p-6 sm:p-10 shadow-2xl w-full max-w-2xl text-center mx-auto transform transition-all duration-300 hover:scale-[1.01] hover:shadow-indigo-500/20">
         <img
-          src={profile.image || "https://placehold.co/120x120/333333/FFFFFF?text=Profile"}
+          src={
+            profile.image ||
+            "https://placehold.co/120x120/333333/FFFFFF?text=Profile"
+          }
           alt="Profile"
           className="w-32 h-32 rounded-full object-cover mx-auto border-4 border-indigo-500 shadow-lg mb-6 transform transition-transform duration-300 hover:scale-105"
         />
@@ -160,8 +162,8 @@ export default function ProfilePage() {
       </div>
 
       {/* Blogs Section */}
-      <div className="w-full bg-gray-800 text-white p-6 rounded-3xl shadow-2xl mt-12 border border-gray-700  transform transition-all duration-300 hover:scale-[1.005] hover:shadow-indigo-500/20">
-        <h2 className="text-3xl font-bold text-indigo-300 mb-8 border-b-2 border-indigo-600 pb-4">
+      <div className="w-full max-w-6xl mx-auto mt-12">
+        <h2 className="text-2xl font-bold text-indigo-300 mb-4">
           Blogs by {profile.name}
         </h2>
 
@@ -179,45 +181,30 @@ export default function ProfilePage() {
         )}
 
         {!loading && blogs.length > 0 && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {blogs.map((blog) => (
               <Link
                 key={blog._id}
                 href={`/blogs/${blog.category}/${blog.title}/${blog.slug}`}
-                className="bg-gray-900 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-700 hover:border-indigo-500 transform hover:-translate-y-1"
+                className="bg-gray-800 hover:border-indigo-500 transition border border-gray-700 rounded-lg shadow-md overflow-hidden"
               >
-                {/* Blog Image */}
                 {blog.featuredImage ? (
                   <img
                     src={blog.featuredImage}
                     alt={blog.title}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src =
-                        "https://placehold.co/600x300/222222/999999?text=Image+Unavailable";
-                    }}
+                    className="w-full h-48 object-cover"
                   />
                 ) : (
-                  <div className="w-full h-48 bg-gray-700 flex items-center justify-center text-gray-400 text-base font-medium">
-                    No Image Available
+                  <div className="w-full h-48 bg-gray-700 flex items-center justify-center text-gray-400">
+                    No Image
                   </div>
                 )}
-
-                {/* Blog Info */}
-                <div className="p-5">
-                  <h3 className="text-xl font-semibold text-indigo-400 mb-3 hover:underline leading-tight">
-                    <FaBookOpen className="inline-block mr-2 text-indigo-300" />
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold text-indigo-400 mb-1">
                     {blog.title}
                   </h3>
-                  <p className="text-sm text-gray-400 mb-2">
-                    Category:{" "}
-                    <span className="font-medium text-indigo-300">
-                      {blog.category}
-                    </span>
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    Published: {dayjs(blog.createdAt).format("MMMM D, YYYY")}
+                  <p className="text-sm text-gray-400">
+                    {dayjs(blog.createdAt).format("MMM D, YYYY")}
                   </p>
                 </div>
               </Link>
