@@ -1,46 +1,63 @@
 import mongoose from "mongoose";
 
-const blogSchema = new mongoose.Schema({
+const blogSchema = new mongoose.Schema(
+  {
     author: {
-        type:String,
+      type: String,
     },
     authorId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
-    category:{
-        type: String,
-        required: true,
-        trim: true
+    category: {
+      type: String,
+      required: true,
+      trim: true,
     },
     catid: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Category',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
     },
     title: {
-        type: String,
-        required: true,
-        trim: true
+      type: String,
+      required: true,
+      trim: true,
     },
     slug: {
-        type: String,
-        required: true,
-        unique: true,
-        trim: true
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
     },
-    blogcontent:{
-        type: String,
-        required: true,
-        trim: true
+    blogcontent: {
+      type: String,
+      required: true,
+      trim: true,
     },
     featuredImage: {
-        type: String,
-        required: true,
-        trim: true
-    }
+      type: String,
+      required: true,
+      trim: true,
+    },
+    views: {
+      type: Number,
+      default: 0,
+    },
+    likes: {
+      type: Number,
+      default: 0,
+    },
+    likedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
-}, {timestamps: true });
-
-const Blog = mongoose.models.Blog || mongoose.model('Blog', blogSchema, 'blogs');
+const Blog =
+  mongoose.models.Blog || mongoose.model("Blog", blogSchema, "blogs");
 export default Blog;
