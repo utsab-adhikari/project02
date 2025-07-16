@@ -14,6 +14,8 @@ import {
   FaSignOutAlt,
   FaRobot,
   FaCommentDots,
+  FaEye,
+  FaHeart,
 } from "react-icons/fa";
 import { FaSquareFacebook } from "react-icons/fa6";
 import { IoLogoWhatsapp } from "react-icons/io5";
@@ -117,8 +119,8 @@ function Header({ onLogout }) {
 function AnalyticsSection({ stats }) {
   const cards = [
     { title: "Total Blogs", value: stats.blogCount, icon: <FaBookOpen /> },
-    { title: "Total Views", value: stats.viewCount, icon: <FaRegEdit /> },
-    { title: "Total Likes", value: stats.likeCount, icon: <FaEnvelope /> },
+    { title: "Total Views", value: stats.viewCount, icon: <FaEye /> },
+    { title: "Total Likes", value: stats.likeCount, icon: <FaHeart /> },
     {
       title: "Recent Comments",
       value: stats.recentComments.length,
