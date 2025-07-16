@@ -11,7 +11,7 @@ export async function GET(request, { params }) {
     await connectDB();
     const session = await getServerSession(authOptions);
 
-    const { category, title, slug } = params;
+    const { category, title, slug } = await params;
 
     const user = session?.user
       ? await User.findOne({ email: session.user.email })

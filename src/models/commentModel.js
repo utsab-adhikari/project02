@@ -22,6 +22,9 @@ const commentSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    authorEmail: {
+      type: String,
+    },
     text: {
       type: String,
       required: true,

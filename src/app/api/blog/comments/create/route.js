@@ -30,6 +30,7 @@ export async function POST(req) {
       author: user.name,
       authorId: user._id,
       authorImg: user.image,
+      authorEmail: user.email
     });
     return NextResponse.json(comment, { status: 201 });
   } catch (error) {

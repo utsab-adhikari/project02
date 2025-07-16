@@ -20,6 +20,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import RelatedBlog from "./RelatedBlogs";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 dayjs.extend(relativeTime);
 
 const BlogDetails = ({ category, title, slug }) => {
@@ -161,56 +162,69 @@ const BlogDetails = ({ category, title, slug }) => {
     }));
   };
 
-  if(status === "authenticated") {
   const handleCommentSubmit = async (e, blogId) => {
-    e.preventDefault();
-    const commentText = postInteractionState[blogId]?.commentInput.trim();
+    if (status === "authenticated") {
+      e.preventDefault();
+      const commentText = postInteractionState[blogId]?.commentInput.trim();
 
-    if (!commentText) {
-      toast.error("Comment cannot be empty.");
-      return;
-    }
+      if (!commentText) {
+        toast.error("Comment cannot be empty.");
+        return;
+      }
 
-    // Optimistic update: Add a temporary comment to the UI
-    const tempCommentId = `temp-${Date.now()}`;
-    const newComment = {
-      _id: tempCommentId,
-      text: commentText,
-      createdAt: new Date().toISOString(),
-      isTemp: true, // Mark as temporary
-    };
-
-    setPostInteractionState((prevState) => ({
-      ...prevState,
-      [blogId]: {
-        ...prevState[blogId],
-        comments: [newComment, ...(prevState[blogId]?.comments || [])], // Add to the beginning
-        commentInput: "", // Clear input immediately
-        showComments: true, // Ensure comments are visible
-      },
-    }));
-
-    try {
-      const res = await axios.post("/api/blog/comments/create", {
-        blogId,
+      // Optimistic update: Add a temporary comment to the UI
+      const tempCommentId = `temp-${Date.now()}`;
+      const newComment = {
+        _id: tempCommentId,
         text: commentText,
-      });
+        createdAt: new Date().toISOString(),
+        isTemp: true, // Mark as temporary
+      };
 
-      if (res.status === 201) {
-        toast.success("Comment posted successfully!");
-        // Replace temporary comment with actual one from response
-        setPostInteractionState((prevState) => ({
-          ...prevState,
-          [blogId]: {
-            ...prevState[blogId],
-            comments: prevState[blogId].comments.map((c) =>
-              c._id === tempCommentId ? { ...res.data, isTemp: false } : c
-            ),
-          },
-        }));
-      } else {
-        toast.error("Failed to post comment. Please try again.");
-        // Revert optimistic update on failure
+      setPostInteractionState((prevState) => ({
+        ...prevState,
+        [blogId]: {
+          ...prevState[blogId],
+          comments: [newComment, ...(prevState[blogId]?.comments || [])], // Add to the beginning
+          commentInput: "", // Clear input immediately
+          showComments: true, // Ensure comments are visible
+        },
+      }));
+
+      try {
+        const res = await axios.post("/api/blog/comments/create", {
+          blogId,
+          text: commentText,
+        });
+
+        if (res.status === 201) {
+          toast.success("Comment posted successfully!");
+          // Replace temporary comment with actual one from response
+          setPostInteractionState((prevState) => ({
+            ...prevState,
+            [blogId]: {
+              ...prevState[blogId],
+              comments: prevState[blogId].comments.map((c) =>
+                c._id === tempCommentId ? { ...res.data, isTemp: false } : c
+              ),
+            },
+          }));
+        } else {
+          toast.error("Failed to post comment. Please try again.");
+          // Revert optimistic update on failure
+          setPostInteractionState((prevState) => ({
+            ...prevState,
+            [blogId]: {
+              ...prevState[blogId],
+              comments: prevState[blogId].comments.filter(
+                (c) => c._id !== tempCommentId
+              ),
+            },
+          }));
+        }
+      } catch (err) {
+        toast.error("Error posting comment. Please try again.");
+        // Revert optimistic update on error
         setPostInteractionState((prevState) => ({
           ...prevState,
           [blogId]: {
@@ -221,23 +235,10 @@ const BlogDetails = ({ category, title, slug }) => {
           },
         }));
       }
-    } catch (err) {
-      toast.error("Error posting comment. Please try again.");
-      // Revert optimistic update on error
-      setPostInteractionState((prevState) => ({
-        ...prevState,
-        [blogId]: {
-          ...prevState[blogId],
-          comments: prevState[blogId].comments.filter(
-            (c) => c._id !== tempCommentId
-          ),
-        },
-      }));
+    } else if (status === "unauthenticated") {
+      toast.error("Please login first");
     }
   };
-} else if(status === "unauthenticated"){
-  toast.error("Please login first")
-}
 
   if (loading) {
     return (
@@ -343,7 +344,7 @@ const BlogDetails = ({ category, title, slug }) => {
             onClick={() => handleToggleComments(blog._id)}
             className="flex items-center gap-2 text-white bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-md transition"
           >
-            <FaCommentDots /> Comment
+            <FaCommentDots /> Comments
           </button>
         </div>
 
@@ -395,7 +396,20 @@ const BlogDetails = ({ category, title, slug }) => {
                         : ""
                     }`}
                   >
-                    <p className="mb-1 leading-snug">{comment.text}</p>
+                    <div className="flex flex-nowrap items-center justify-between gap-3">
+                      <p className="mb-1 leading-snug">{comment.text}</p>
+                      <Link
+                        href={`/profile/${comment.authorEmail}`}
+                        className="flex cursor-pointer items-center flex-nowrap gap-3"
+                      >
+                        <img
+                          src={comment.authorImg}
+                          alt={comment.author}
+                          className="w-8 h-8 rounded-full object-cover border border-gray-600"
+                        />
+                        {comment.author}
+                      </Link>
+                    </div>
                     <div className="text-xs text-gray-400">
                       {dayjs(comment.createdAt).fromNow()}
                       {comment.isTemp && (
