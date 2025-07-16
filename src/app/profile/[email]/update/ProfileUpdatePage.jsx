@@ -6,9 +6,12 @@ import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { FaSpinner, FaSave } from "react-icons/fa";
 import ImageUploader from "@/components/ImageUploader";
+import { useSession } from "next-auth/react";
 
 export default function ProfileUpdatePage() {
+  const { data: session, status } = useSession();
   const { email } = useParams();
+  const decodedEmail = email.replace('%40', '@');
   const router = useRouter();
 
   const [profile, setProfile] = useState(null);
@@ -20,11 +23,15 @@ export default function ProfileUpdatePage() {
   const [contact, setContact] = useState("");
   const [updating, setUpdating] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [thief, setThief] = useState("");
 
   useEffect(() => {
+    if (!email) return;
+    if (session?.user?.email !== decodedEmail) {
+      setThief(":::::");
+      router.push("/");
+    }
     const fetchProfile = async () => {
-      if (!email) return;
-
       setLoading(true);
       try {
         const res = await axios.get(`/api/profile/${email}`, {
@@ -37,6 +44,7 @@ export default function ProfileUpdatePage() {
           setProfile(res.data.profile);
           setBio(res.data.profile.bio || "");
           setContact(res.data.profile.contact || "");
+          setImageUrl(res.data.profile.image);
           setFacebook(res.data.profile.facebook || "");
           setGithub(res.data.profile.github || "");
           setName(res.data.profile.name);
@@ -48,7 +56,6 @@ export default function ProfileUpdatePage() {
         setLoading(false);
       }
     };
-
     fetchProfile();
   }, [email]);
 
@@ -67,7 +74,14 @@ export default function ProfileUpdatePage() {
     try {
       await axios.put(
         `/api/profile/${email}`,
-        { bio, contact, image:imageUrl, name:name },
+        {
+          bio,
+          contact,
+          image: imageUrl,
+          name: name,
+          facebook: facebook,
+          github: github,
+        },
         { withCredentials: true }
       );
       toast.success("Profile updated successfully.");
@@ -80,23 +94,39 @@ export default function ProfileUpdatePage() {
     }
   };
 
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex justify-center items-center bg-gray-900 text-indigo-400">
+        <FaSpinner className="animate-spin text-4xl" />
+        <span className="ml-4 text-xl">Loading session...</span>
+      </div>
+    );
+  }
+
+  if (thief === ":::::") {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-900 text-indigo-400">
+        <FaSpinner className="animate-spin text-4xl" />
+      </div>
+    );
+  }
+
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-indigo-500">
-        <FaSpinner className="animate-spin text-3xl mr-3" />
-        <span>Loading profile...</span>
+      <div className="flex justify-center items-center min-h-screen bg-gray-900 text-indigo-400">
+        <FaSpinner className="animate-spin text-4xl" />
+        <span className="ml-4 text-xl">Loading profile...</span>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="text-center text-red-500 py-20 font-semibold">
-        Profile not found.
+      <div className="min-h-screen flex justify-center items-center bg-gray-900 text-center py-10 text-red-500 font-semibold text-xl">
+        Profile not available.
       </div>
     );
   }
-
   return (
     <div className="min-h-screen flex flex-col items-center px-4 py-10 bg-gray-900 text-white">
       <div className="bg-[#1e293b] border border-indigo-500/30 p-8 rounded-2xl w-full max-w-xl shadow-md">
@@ -110,7 +140,7 @@ export default function ProfileUpdatePage() {
             <ImageUploader onUpload={handleImageUpload} />
             {imageUrl && (
               <img
-                src={imageUrl}
+                src={imageUrl || res.data.profile.image}
                 alt="Uploaded"
                 className="w-24 h-24 rounded-full object-cover mx-auto border-4 border-indigo-500 mb-4"
               />
@@ -156,7 +186,7 @@ export default function ProfileUpdatePage() {
               placeholder="e.g. +9779867500000"
             />
           </div>
-           <div>
+          <div>
             <label htmlFor="contact" className="block mb-1 font-medium">
               Facebook
             </label>
@@ -169,7 +199,7 @@ export default function ProfileUpdatePage() {
               placeholder="e.g. https://facebook.com"
             />
           </div>
-           <div>
+          <div>
             <label htmlFor="contact" className="block mb-1 font-medium">
               Github
             </label>

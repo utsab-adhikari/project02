@@ -29,7 +29,7 @@ const Topbar = () => {
           className="flex items-center gap-2 border border-white/40 bg-indigo-900 backdrop-blur-md px-2 py-1 rounded"
         >
           <img
-            src={session.user.image}
+            src={session.user.image || "https://placehold.co/120x120/333333/FFFFFF?text=Profile"}
             alt="Profile"
             className="w-6 h-6 rounded-full object-cover border border-white"
           />
