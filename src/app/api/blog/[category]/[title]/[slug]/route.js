@@ -10,13 +10,21 @@ export async function GET(request, { params }) {
   try {
     await connectDB();
     const session = await getServerSession(authOptions);
-    const user = await User.findOne({ email: session.user.email });
 
+    const { category, title, slug } = params;
 
-
-    const { category, title, slug } = await params;
+    const user = session?.user
+      ? await User.findOne({ email: session.user.email })
+      : null;
 
     const cat = await Category.findOne({ category });
+
+    if (!cat) {
+      return NextResponse.json(
+        { success: false, message: "Category not found" },
+        { status: 404 }
+      );
+    }
 
     const blog = await Blog.findOne({
       catid: cat._id,
@@ -35,8 +43,10 @@ export async function GET(request, { params }) {
       $inc: { views: 1 },
     });
 
-    const hasLiked = blog.likedBy.includes(user._id);
-
+    let hasLiked = false;
+    if (user && blog.likedBy?.includes(user._id)) {
+      hasLiked = true;
+    }
 
     const author = await User.findOne({ _id: blog.authorId });
 
@@ -46,7 +56,7 @@ export async function GET(request, { params }) {
       message: "Blog fetched successfully",
       blog,
       author,
-      liked: hasLiked
+      liked: hasLiked,
     });
   } catch (error) {
     return NextResponse.json({

@@ -20,16 +20,6 @@ import { useSession } from "next-auth/react";
 
 const BlogDetails = ({ category, title, slug }) => {
   const pathname = usePathname();
-
-  const { data: session, status } = useSession();
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "page_view", {
-        page_path: pathname,
-      });
-    }
-  }, [pathname]);
   const [blog, setBlog] = useState(null);
   const [author, setAuthor] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -61,18 +51,29 @@ const BlogDetails = ({ category, title, slug }) => {
     fetchBlog();
   }, [category, title, slug]);
 
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "page_view", {
+        page_path: pathname,
+      });
+    }
+  }, [pathname]);
+
   const handleLike = async () => {
     setLikeLoading("Loading");
 
     if (status === "unauthenticated") {
       toast.error("Please login first");
+        setLikeLoading("");
     } else if (status === "authenticated") {
       try {
         const res = await axios.post(`/api/blog/${category}/${title}/${slug}`);
         setLikes(res.data.likes);
         setLiked(res.data.liked);
       } catch (err) {
-        toast.error("Failed to like the post.", err);
+        toast.error("Failed to like the Blog.", err);
       } finally {
         setLikeLoading("");
       }
