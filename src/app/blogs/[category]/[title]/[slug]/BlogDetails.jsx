@@ -12,17 +12,22 @@ import {
   FaHeart,
   FaShareAlt,
   FaCommentDots,
+  FaPaperPlane,
 } from "react-icons/fa";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
 import RelatedBlog from "./RelatedBlogs";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+dayjs.extend(relativeTime);
 
 const BlogDetails = ({ category, title, slug }) => {
   const pathname = usePathname();
   const [blog, setBlog] = useState(null);
   const [author, setAuthor] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [postInteractionState, setPostInteractionState] = useState({});
   const [likes, setLikes] = useState(0);
   const [views, setViews] = useState(0);
   const [liked, setLiked] = useState();
@@ -38,6 +43,14 @@ const BlogDetails = ({ category, title, slug }) => {
           setLikes(res.data.blog.likes || 0);
           setViews(res.data.blog.views || 0);
           setLiked(res.data.liked);
+          const initialInteractionState = {};
+          initialInteractionState[res.data.blog._id] = {
+            comments: [],
+            showComments: false,
+            loadingComments: false,
+            commentInput: "",
+          };
+          setPostInteractionState(initialInteractionState);
         } else {
           toast.error("Blog not found.");
         }
@@ -66,7 +79,7 @@ const BlogDetails = ({ category, title, slug }) => {
 
     if (status === "unauthenticated") {
       toast.error("Please login first");
-        setLikeLoading("");
+      setLikeLoading("");
     } else if (status === "authenticated") {
       try {
         const res = await axios.post(`/api/blog/${category}/${title}/${slug}`);
@@ -77,6 +90,149 @@ const BlogDetails = ({ category, title, slug }) => {
       } finally {
         setLikeLoading("");
       }
+    }
+  };
+
+  // Function to fetch comments for a specific post
+  const fetchComments = async (blogId) => {
+    setPostInteractionState((prevState) => ({
+      ...prevState,
+      [blogId]: {
+        ...prevState[blogId],
+        loadingComments: true,
+        showComments: true, // Always show comments area when fetching
+      },
+    }));
+    try {
+      const res = await axios.get(`/api/blog/comments?blogId=${blogId}`);
+      setPostInteractionState((prevState) => ({
+        ...prevState,
+        [blogId]: {
+          ...prevState[blogId],
+          comments: res.data,
+          loadingComments: false,
+        },
+      }));
+    } catch (err) {
+      toast.error("Error loading comments. Please try again.");
+      setPostInteractionState((prevState) => ({
+        ...prevState,
+        [blogId]: {
+          ...prevState[blogId],
+          loadingComments: false,
+          showComments: false, // Hide comments if loading fails
+        },
+      }));
+    }
+  };
+
+  // Toggle comment section visibility and fetch if not already fetched
+  const handleToggleComments = (blogId) => {
+    setPostInteractionState((prevState) => {
+      const newState = { ...prevState };
+      const currentPostState = newState[blogId];
+
+      if (
+        !currentPostState?.showComments &&
+        currentPostState.comments.length === 0 &&
+        !currentPostState.loadingComments
+      ) {
+        // If comments are not shown, not loaded, and not currently loading, fetch them
+        fetchComments(blogId);
+      } else {
+        // Otherwise, just toggle visibility
+        newState[blogId] = {
+          ...currentPostState,
+          showComments: !currentPostState.showComments,
+        };
+      }
+      return newState;
+    });
+  };
+
+  // Handle comment input change
+  const handleCommentInputChange = (blogId, value) => {
+    setPostInteractionState((prevState) => ({
+      ...prevState,
+      [blogId]: {
+        ...prevState[blogId],
+        commentInput: value,
+      },
+    }));
+  };
+
+  // Handle comment submission
+  const handleCommentSubmit = async (e, blogId) => {
+    e.preventDefault();
+    const commentText = postInteractionState[blogId]?.commentInput.trim();
+
+    if (!commentText) {
+      toast.error("Comment cannot be empty.");
+      return;
+    }
+
+    // Optimistic update: Add a temporary comment to the UI
+    const tempCommentId = `temp-${Date.now()}`;
+    const newComment = {
+      _id: tempCommentId,
+      text: commentText,
+      createdAt: new Date().toISOString(),
+      isTemp: true, // Mark as temporary
+    };
+
+    setPostInteractionState((prevState) => ({
+      ...prevState,
+      [blogId]: {
+        ...prevState[blogId],
+        comments: [newComment, ...(prevState[blogId]?.comments || [])], // Add to the beginning
+        commentInput: "", // Clear input immediately
+        showComments: true, // Ensure comments are visible
+      },
+    }));
+
+    try {
+      const res = await axios.post("/api/blog/comments/create", {
+        blogId,
+        text: commentText,
+      });
+
+      if (res.status === 201) {
+        toast.success("Comment posted successfully!");
+        // Replace temporary comment with actual one from response
+        setPostInteractionState((prevState) => ({
+          ...prevState,
+          [blogId]: {
+            ...prevState[blogId],
+            comments: prevState[blogId].comments.map((c) =>
+              c._id === tempCommentId ? { ...res.data, isTemp: false } : c
+            ),
+          },
+        }));
+      } else {
+        toast.error("Failed to post comment. Please try again.");
+        // Revert optimistic update on failure
+        setPostInteractionState((prevState) => ({
+          ...prevState,
+          [blogId]: {
+            ...prevState[blogId],
+            comments: prevState[blogId].comments.filter(
+              (c) => c._id !== tempCommentId
+            ),
+          },
+        }));
+      }
+    } catch (err) {
+      toast.error("Error posting comment. Please try again.");
+      // Revert optimistic update on error
+      setPostInteractionState((prevState) => ({
+        ...prevState,
+        [blogId]: {
+          ...prevState[blogId],
+          comments: prevState[blogId].comments.filter(
+            (c) => c._id !== tempCommentId
+          ),
+        },
+      }));
     }
   };
 
@@ -180,13 +336,81 @@ const BlogDetails = ({ category, title, slug }) => {
           >
             <FaShareAlt /> Share
           </button>
-          <a
-            href="#comments"
+          <button
+            onClick={() => handleToggleComments(blog._id)}
             className="flex items-center gap-2 text-white bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded-md transition"
           >
             <FaCommentDots /> Comment
-          </a>
+          </button>
         </div>
+
+        {postInteractionState[blog._id]?.showComments && (
+          <div className="mt-5 pt-4 border-t border-gray-800">
+            {/* Comment Input */}
+            <form
+              onSubmit={(e) => handleCommentSubmit(e, blog._id)}
+              className="flex items-center gap-3 mb-4"
+            >
+              <input
+                name="comment"
+                type="text"
+                placeholder="Write a comment..."
+                value={postInteractionState[blog._id]?.commentInput || ""}
+                onChange={(e) =>
+                  handleCommentInputChange(blog._id, e.target.value)
+                }
+                className="flex-1 bg-gray-800 text-white px-4 py-2.5 rounded-full text-sm outline-none border border-gray-700 focus:border-indigo-500 transition-colors duration-200 placeholder-gray-500"
+              />
+              <button
+                type="submit"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2.5 rounded-full flex items-center gap-1 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                disabled={postInteractionState[blog._id]?.loadingComments}
+              >
+                {postInteractionState[blog._id]?.loadingComments ? (
+                  <FaSpinner className="animate-spin" />
+                ) : (
+                  <FaPaperPlane />
+                )}
+                <span className="hidden sm:inline">Post</span>
+              </button>
+            </form>
+
+            {/* Comment List */}
+            {postInteractionState[blog._id]?.loadingComments ? (
+              <div className="flex justify-center items-center py-4">
+                <FaSpinner className="animate-spin text-indigo-500 text-2xl" />
+                <p className="ml-3 text-gray-400">Loading comments...</p>
+              </div>
+            ) : postInteractionState[blog._id]?.comments.length > 0 ? (
+              <div className="mt-3 space-y-3">
+                {postInteractionState[blog._id]?.comments.map((comment) => (
+                  <div
+                    key={comment._id}
+                    className={`bg-gray-800 px-4 py-3 rounded-lg text-sm text-gray-200 shadow-sm ${
+                      comment.isTemp
+                        ? "opacity-70 border border-dashed border-indigo-500"
+                        : ""
+                    }`}
+                  >
+                    <p className="mb-1 leading-snug">{comment.text}</p>
+                    <div className="text-xs text-gray-400">
+                      {dayjs(comment.createdAt).fromNow()}
+                      {comment.isTemp && (
+                        <span className="ml-2 text-indigo-400">
+                          (Sending...)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-500 text-sm py-4">
+                No comments yet. Be the first to comment!
+              </p>
+            )}
+          </div>
+        )}
 
         {/* Thank You / CTA */}
         <div className="bg-gray-800 p-6 rounded-lg border border-gray-700 text-center">
@@ -201,11 +425,6 @@ const BlogDetails = ({ category, title, slug }) => {
 
         {/* Related Blogs */}
         <RelatedBlog category={blog.category} blogid={blog._id} />
-
-        {/* Comments Section Anchor */}
-        <div id="comments" className="mt-12">
-          {/* Render your comment form and list here */}
-        </div>
       </div>
     </div>
   );

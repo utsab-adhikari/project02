@@ -3,9 +3,9 @@ import mongoose from "mongoose";
 
 const commentSchema = new mongoose.Schema(
   {
-    postId: {
+    blogId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Post", 
+      ref: "Blog", 
       required: true,
     },
     parentId: {
@@ -13,14 +13,21 @@ const commentSchema = new mongoose.Schema(
       ref: "Comment",
       default: null, 
     },
-    // author: {
-    //   type: String,
-    //   required: true,
-    //   trim: true,
-    // },
+    author: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    authorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     text: {
       type: String,
       required: true,
+    },
+    authorImg: {
+      type: String,
     },
     replies: [
       {
