@@ -43,7 +43,7 @@ export default function RootLayout({ children }) {
         </Script>
       </head>
 
-      <body className="flex min-h-screen flex-col bg-[#0f172a] text-white">
+      <body className="flex min-h-screen flex-col bg-gray-950 text-white">
         <SessionProvider>
           <SidebarProvider>
             <div className="flex flex-1 w-full">
