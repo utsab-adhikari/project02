@@ -11,12 +11,6 @@ export default function GoogleLoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/");
-    }
-  }, [status]);
-
-  useEffect(() => {
     const loadProviders = async () => {
       const res = await getProviders();
       setProviders(res);

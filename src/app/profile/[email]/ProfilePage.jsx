@@ -75,7 +75,7 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start px-4 py-10 bg-gray-900 text-white font-inter">
-      {/* Profile Card Section */}
+
       <div className="bg-gray-800 border border-indigo-600/30 rounded-3xl p-6 sm:p-10 shadow-2xl w-full max-w-2xl text-center mx-auto transform transition-all duration-300 hover:scale-[1.01] hover:shadow-indigo-500/20">
         <img
           src={profile.image || "https://placehold.co/120x120/333333/FFFFFF?text=Profile"}
@@ -147,7 +147,6 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Update Profile Button */}
           {session && profile._id === session.user.id && (
             <Link
               href={`/profile/${profile.email}/update`}
