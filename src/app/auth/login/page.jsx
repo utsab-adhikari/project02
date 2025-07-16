@@ -27,7 +27,6 @@ export default function GoogleLoginPage() {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="">
-        {providers?.google && (
           <button
             onClick={() => signIn("google", { callbackUrl: "/" })}
             className=" px-4 py-2 bg-white rounded-sm cursor-pointer hover:bg-gray-200 flex text-black gap-4 items-center justify-between"
@@ -35,7 +34,6 @@ export default function GoogleLoginPage() {
             <FcGoogle size={24} />
             Continue with Google
           </button>
-        )}
       </div>
     </div>
   );

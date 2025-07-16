@@ -12,6 +12,8 @@ import { FaHome } from "react-icons/fa";
 import Footer from "@/components/Footer";
 import Script from "next/script";
 import { SessionProvider } from "next-auth/react";
+import NotLoggedIn from "@/components/NotLoggedIn";
+import Topbar from "@/components/Topbar";
 
 export default function RootLayout({ children }) {
   const pathname = usePathname();
@@ -47,7 +49,8 @@ export default function RootLayout({ children }) {
             <div className="flex flex-1 w-full">
               {/* ✅ Now inside SidebarProvider */}
               <AppSidebar />
-              <SidebarTrigger className="fixed z-30  top-2 left-2" />
+              <SidebarTrigger className="fixed z-30 block md:hidden  top-2 left-2" />
+
 
               {!isIndex && (
                 <button
@@ -69,7 +72,9 @@ export default function RootLayout({ children }) {
                       },
                     }}
                   />
+                  <Topbar/>
                   <div className="w-full">{children}</div>
+                  <NotLoggedIn/>
                 </main>
 
                 {!isIndex && (

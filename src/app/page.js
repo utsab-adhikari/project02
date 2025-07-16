@@ -217,8 +217,6 @@ const LandingPage = () => {
         )}
       </section>
 
-      {!loggedIn && <NotLoggedIn />}
-
       <About />
 
       <Contact />
