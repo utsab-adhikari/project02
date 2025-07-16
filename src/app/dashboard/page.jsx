@@ -46,8 +46,6 @@ export default function Dashboard() {
     };
 
     getProfile();
-    } else {
-        router.push("/");
     }
   }, [status]);
 
