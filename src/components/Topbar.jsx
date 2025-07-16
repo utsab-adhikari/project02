@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 import React from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const Topbar = () => {
+  const pathname = usePathname();
   const [loggedIn, setLoggedIn] = useState("");
 
   const { data: session, status } = useSession();
@@ -21,7 +23,7 @@ const Topbar = () => {
 
   return (
     <div className="fixed top-2 right-2 z-30 block md:hidden">
-      {loggedIn === "authenticated" && (
+      {(loggedIn === "authenticated" && pathname !== "/dashboard") && (
         <Link
           href="/dashboard"
           className="flex items-center gap-2 border border-white/40 bg-indigo-900 backdrop-blur-md px-2 py-1 rounded"
