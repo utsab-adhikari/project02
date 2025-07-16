@@ -7,22 +7,25 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 const Topbar = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState("");
 
   const { data: session, status } = useSession();
 
   useEffect(() => {
     if (status === "authenticated") {
-      setLoggedIn(true);
+      setLoggedIn("authenticated");
     } else if (status === "unauthenticated") {
-      setLoggedIn(false);
+      setLoggedIn("unauthenticated");
     }
   }, [status]);
 
   return (
     <div className="fixed top-2 right-2 z-30 block md:hidden">
-      {loggedIn && (
-        <Link href="/dashboard" className="flex items-center gap-2 border border-white/40 bg-indigo-900 backdrop-blur-md px-2 py-1 rounded">
+      {loggedIn === "authenticated" && (
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 border border-white/40 bg-indigo-900 backdrop-blur-md px-2 py-1 rounded"
+        >
           <img
             src={session.user.image}
             alt="Profile"
