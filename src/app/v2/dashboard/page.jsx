@@ -93,9 +93,20 @@ export default function Dashboard() {
     <div>
       <div className="mb-10">
         <div className="relative w-full h-40 bg-blue-600">
-          <p className="mx-auto text-center text-sm font-semibold text-green-400"> Welcome ! to Dashboard (v2)</p>
+          <p className="mx-auto text-center text-sm font-semibold text-green-400">
+            {" "}
+            Welcome ! to Dashboard (v2)
+          </p>
+          <button
+            onClick={() => signOut()}
+            className="absolute bg-red-600/30 p-2 hover:bg-red-600/50 cursor-pointer flex items-center rounded-full top-2 right-2 font-semibold transition-all duration-300 shadow-md"
+          >
+            <FaSignOutAlt />
+          </button>
           <div className="">
-            <p className="text-xl right-3 font-semibold absolute bottom-0 ">{profile.name}</p>
+            <p className="text-xl right-3 font-semibold absolute bottom-0 ">
+              {profile.name}
+            </p>
             <img
               src={
                 profile.image ||
@@ -107,8 +118,26 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="flex bg-">
-
+      <div className="pt-10">
+        <p className="text-indigo-200 font-semibold text-sm mx-auto text-center">
+          Overview
+        </p>
+        <AnalyticsSection stats={stats} />
+      </div>
+      <div className="px-5 py-2 flex justify-evenly items-center">
+        <Link
+          href="#"
+          className="bg-green-500 px-2 py-2 font-semibold hover:bg-green-400 rounded text-black text-sm"
+        >
+          Create Blog
+        </Link>
+        <Link
+          href="#"
+          className="bg-stone-600 px-2 py-2 rounded text-stone-200 font-semibold hover:bg-stone-500 text-sm"
+        >
+          AI Assistant
+        </Link>
+        {/* <Link href="#" className="bg-blue-300 px-2 py-2 rounded text-black text-sm" >Upgrade</Link> */}
       </div>
       <div className="">
         {blogs.length === 0 ? (
@@ -163,10 +192,10 @@ export default function Dashboard() {
 
                     <div className="flex items-center gap-4 mt-3">
                       <p className="flex items-center text-sm gap-1 text-gray-300">
-                        304 <FaEye />
+                        {blog.views} <FaEye />
                       </p>
                       <p className="flex items-center text-sm gap-1 text-gray-300">
-                        40 <FaHeart />
+                        {blog.likes} <FaHeart />
                       </p>
                     </div>
                   </div>
@@ -180,24 +209,7 @@ export default function Dashboard() {
   );
 }
 
-function Header({ onLogout }) {
-  return (
-    <header className="w-full max-w-7xl mx-auto flex justify-between items-center py-4 px-4 bg-gray-900 rounded-xl shadow-lg mb-8">
-      <h1 className="text-3xl font-extrabold text-indigo-400 tracking-wide">
-        Dashboard
-      </h1>
-      <button
-        onClick={onLogout}
-        className="flex items-center gap-2 px-5 py-2 bg-red-700 hover:bg-red-800 rounded-full font-semibold transition-all duration-300 shadow-md"
-      >
-        <FaSignOutAlt />
-        Logout
-      </button>
-    </header>
-  );
-}
-
-function AnalyticsSection({ stats }) {
+const AnalyticsSection = ({ stats }) => {
   const cards = [
     { title: "Total Blogs", value: stats.blogCount, icon: <FaBookOpen /> },
     { title: "Total Views", value: stats.viewCount, icon: <FaEye /> },
@@ -210,7 +222,7 @@ function AnalyticsSection({ stats }) {
   ];
 
   return (
-    <section className="bg-gray-900 p-6 rounded-xl border border-indigo-700 grid grid-cols-2 md:grid-cols-4 gap-6 mb-10 max-w-7xl mx-auto">
+    <section className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6 mb-10 max-w-7xl mx-auto">
       {cards.map((c) => (
         <div
           key={c.title}
@@ -225,7 +237,7 @@ function AnalyticsSection({ stats }) {
       ))}
     </section>
   );
-}
+};
 
 function ProfileSection({ profile }) {
   return (
