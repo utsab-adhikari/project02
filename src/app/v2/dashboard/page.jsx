@@ -93,6 +93,7 @@ export default function Dashboard() {
     <div>
       <div className="mb-10">
         <div className="relative w-full h-40 bg-blue-600">
+          
           <div className="">
             <p className="text-xl right-3 font-semibold absolute bottom-0 ">{profile.name}</p>
             <img
@@ -101,7 +102,7 @@ export default function Dashboard() {
                 "https://placehold.co/150x150/222222/EEEEEE?text=Profile"
               }
               alt={`${profile.name}'s avatar`}
-              className="absolute mx-[10vw] h-20 w-20 rounded-full border-2 border-black bottom-[-40] "
+              className="absolute mx-[10vw] h-20 w-20 rounded-full border-2 border-white bottom-[-40] "
             />
           </div>
         </div>
