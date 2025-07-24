@@ -22,6 +22,7 @@ import { IoLogoWhatsapp } from "react-icons/io5";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { CiMenuKebab } from "react-icons/ci";
+import { ContextMenu } from "@/v2Components/ContextMenu";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -99,43 +100,59 @@ export default function Dashboard() {
             </p>
           </div>
         ) : (
-          <div className="">
+          <div className="flex flex-col gap-6 px-4 py-8">
             {blogs.map((blog) => (
-              <Link
+              <div
                 key={blog._id}
-                href={`/blogs/${blog.category}/${blog.title}/${blog.slug}`}
-                className="bg-white/10 backdrop-blur-xl max-h-[20vh] rounded-md mt-10 mx-4 flex gap-4"
+                className="relative flex bg-white/10 backdrop-blur-md rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
               >
-                <div className="">
-                  {blog.featuredImage ? (
-                    <img
-                      src={blog.featuredImage}
-                      alt={blog.title}
-                      className="h-full md:max-h-[20vh] w-[20vw] object-cover rounded-md"
-                    />
-                  ) : (
-                    <div className="">No Image</div>
-                  )}
+                {/* Three-dot context menu */}
+                <div className="absolute top-0 right-3 z-10">
+                  <ContextMenu blogId={blog._id} />
                 </div>
-                <div className=" py-3">
-                  <h3 className="text-indigo-300 text-lg font-semibold max-w-[50vw] truncate">
-                    {blog.title}
-                  </h3>
-                  <p className="text-sm text-gray-400">
-                    Published on {dayjs(blog.createdAt).format("MMM D, YYYY")}
-                  </p>
-                  <div className="flex items-center py-1 gap-4">
-                    <p className="flex items-center text-sm gap-1">
-                      304
-                      <FaEye />
-                    </p>
-                    <p className="flex items-center text-sm gap-1">
-                      40
-                      <FaHeart />
-                    </p>
+
+                <Link
+                  href={`/blogs/${blog.category}/${blog.title}/${blog.slug}`}
+                  className="flex flex-row"
+                >
+                  {/* ✅ Image always on left */}
+                  <div className="flex-1 w-[120px] sm:w-[160px] md:w-[200px] h-auto shrink-0">
+                    {blog.featuredImage ? (
+                      <img
+                        src={blog.featuredImage}
+                        alt={blog.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gray-700 text-white text-sm">
+                        No Image
+                      </div>
+                    )}
                   </div>
-                </div>
-              </Link>
+
+                  {/* ✅ Text on the right */}
+                  <div className="p-4 flex flex-col justify-between max-w-[60vw]">
+                    <div>
+                      <h3 className="text-indigo-300 text-lg font-semibold truncate">
+                        {blog.title}
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        Published on{" "}
+                        {dayjs(blog.createdAt).format("MMM D, YYYY")}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-4 mt-3">
+                      <p className="flex items-center text-sm gap-1 text-gray-300">
+                        304 <FaEye />
+                      </p>
+                      <p className="flex items-center text-sm gap-1 text-gray-300">
+                        40 <FaHeart />
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              </div>
             ))}
           </div>
         )}
