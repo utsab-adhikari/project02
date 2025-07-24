@@ -72,7 +72,7 @@ export default function RootLayout({ children }) {
                       },
                     }}
                   />
-                  <Topbar/>
+                  {/* <Topbar/> */}
                   <div className="w-full">{children}</div>
                   <NotLoggedIn/>
                 </main>
