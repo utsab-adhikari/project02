@@ -93,7 +93,7 @@ export default function Dashboard() {
     <div>
       <div className="mb-10">
         <div className="relative w-full h-40 bg-blue-600">
-          
+          <p className="mx-auto text-center text-sm font-semibold text-green-400"> Welcome ! to Dashboard (v2)</p>
           <div className="">
             <p className="text-xl right-3 font-semibold absolute bottom-0 ">{profile.name}</p>
             <img
@@ -106,6 +106,9 @@ export default function Dashboard() {
             />
           </div>
         </div>
+      </div>
+      <div className="flex bg-">
+
       </div>
       <div className="">
         {blogs.length === 0 ? (
