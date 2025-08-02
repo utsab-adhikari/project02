@@ -44,6 +44,11 @@ const blogSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    publishType: {
+      type: String,
+      enum: ["draft", "published", "trash", "private"],
+      default: "draft",
+    },
     likes: {
       type: Number,
       default: 0,
