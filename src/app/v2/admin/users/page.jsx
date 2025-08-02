@@ -30,6 +30,8 @@ const Page = () => {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [deletingId, setDeletingId] = useState(null);
+  const [isLoading, setIsLoading] = useState("");
+
   const router = useRouter();
 
   const fetchUsers = useCallback(async (page = 1, search = "") => {
@@ -62,9 +64,14 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
+    if (status === "loading") {
+      setIsLoading("loading");
+    }
+
     if (status === "unauthenticated" || session?.user?.role !== "admin") {
       router.push("/");
     }
+    setIsLoading("");
     fetchUsers();
   }, [fetchUsers]);
 
@@ -137,7 +144,7 @@ const Page = () => {
     return format(date, "MMM d, yyyy");
   };
 
-  if (status === "loading" || loading) {
+  if (status === "loading" || isLoading === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-950 text-indigo-400">
         <motion.div
