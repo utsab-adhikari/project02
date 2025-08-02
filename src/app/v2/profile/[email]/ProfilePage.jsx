@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { useParams } from "next/navigation";
 import {
   FaSpinner,
@@ -10,6 +11,8 @@ import {
   FaRegEdit,
   FaEye,
   FaHeart,
+  FaRegFolder,
+  FaRegClock,
 } from "react-icons/fa";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -226,39 +229,78 @@ const BlogsGrid = ({ blogs, loading, profileName }) => (
 );
 
 // Blog Card Component
+dayjs.extend(relativeTime);
+
 const BlogCard = ({ blog }) => (
-  <Link
-    href={`/blogs/${blog.category}/${blog.title}/${blog.slug}`}
-    className="group bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-indigo-500 transition-all duration-300 shadow-lg hover:shadow-indigo-500/20"
-  >
-    <div className="relative">
-      <img
-        src={
-          blog.featuredImage ||
-          "https://placehold.co/600x400/222222/333333?text=Blog"
-        }
-        alt={blog.title}
-        className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-300"></div>
-      <div className="absolute bottom-4 left-4 right-4 flex justify-between text-white text-sm">
-        <span className="flex items-center gap-2">
-          <FaEye size={16} /> {blog.views || 0}
-        </span>
-        <span className="flex items-center gap-2">
-          <FaHeart size={16} /> {blog.likes || 0}
-        </span>
+  <article className="h-full">
+    <Link
+      href={`/v2/blogs/${blog.category}/${blog.title}/${blog.slug}`}
+      className="group flex flex-col h-full bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 hover:border-indigo-500 transition-all duration-300 shadow-lg hover:shadow-indigo-500/20"
+      aria-label={`Read "${blog.title}" blog post`}
+    >
+      <div className="relative flex-shrink-0">
+        <div className="aspect-video overflow-hidden">
+          <img
+            src={
+              blog.featuredImage ||
+              "https://placehold.co/600x400/222222/333333?text=Blog"
+            }
+            alt={blog.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            loading="lazy"
+            width={600}
+            height={400}
+          />
+        </div>
+
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/20 to-transparent opacity-90 group-hover:opacity-95 transition-opacity duration-300" />
+
+        <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+          <span className="bg-indigo-600/90 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 backdrop-blur-sm">
+            <FaRegFolder className="text-indigo-300" />
+            {blog.category || "Uncategorized"}
+          </span>
+        </div>
+
+        <div className="absolute bottom-4 left-4 right-4 flex justify-between">
+          <div className="flex items-center gap-3 text-white text-sm bg-black/30 px-3 py-1.5 rounded-full backdrop-blur-sm">
+            <div className="flex items-center gap-1.5">
+              <FaEye className="text-indigo-300" size={14} />
+              <span>{blog.views?.toLocaleString() || 0}</span>
+            </div>
+            <div className="w-px h-4 bg-gray-600" />
+            <div className="flex items-center gap-1.5">
+              <FaHeart className="text-rose-400" size={14} />
+              <span>{blog.likes?.toLocaleString() || 0}</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div className="p-6">
-      <h3 className="text-2xl font-semibold text-indigo-400 mb-3 group-hover:text-indigo-300 transition-colors">
-        {blog.title}
-      </h3>
-      <p className="text-sm text-gray-500">
-        Published on {dayjs(blog.createdAt).format("MMMM D, YYYY")}
-      </p>
-    </div>
-  </Link>
+
+      <div className="p-6 flex flex-col flex-grow">
+        <h3 className="text-2xl font-semibold text-indigo-400 mb-3 group-hover:text-indigo-300 transition-colors line-clamp-2">
+          {blog.title}
+        </h3>
+
+        <div className="mt-auto pt-3 flex justify-between items-center">
+          <div className="flex items-center gap-2 text-sm text-gray-500">
+            <FaRegClock size={12} />
+            <time dateTime={blog.createdAt || new Date().toISOString()}>
+              {blog.createdAt
+                ? dayjs().diff(blog.createdAt, "day") <= 3
+                  ? dayjs(blog.createdAt).fromNow()
+                  : dayjs(blog.createdAt).format("MMMM D, YYYY")
+                : "Recently"}
+            </time>
+          </div>
+
+          <span className="text-xs bg-gray-800 text-gray-400 px-2.5 py-1 rounded-full">
+            {blog.readingTime || "5 min read"}
+          </span>
+        </div>
+      </div>
+    </Link>
+  </article>
 );
 
 // Blog Card Skeleton

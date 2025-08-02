@@ -160,14 +160,14 @@ const LandingPage = () => {
             transition={{ delay: 0.4 }}
           >
             <Link
-              href="/blogs"
+              href="/v2/blogs"
               className="inline-flex items-center justify-center px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-full shadow-lg transition-all duration-300 group"
             >
               Explore Content <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Link>
             {loggedIn && (
               <Link
-                href="/blogs/create"
+                href="/v2/blogs/create"
                 className="inline-flex items-center justify-center px-8 py-3.5 border border-indigo-500 text-indigo-300 hover:bg-indigo-500 hover:text-white font-semibold rounded-full shadow-lg transition-all duration-300 group"
               >
                 Create Post <FaCode className="ml-2 group-hover:rotate-6 transition-transform" />
@@ -262,7 +262,7 @@ const LandingPage = () => {
             <div className="text-center p-12 bg-gray-900/50 rounded-2xl border border-gray-800 shadow-lg">
               <p className="text-gray-400 text-xl">No recent posts to display</p>
               <Link
-                href="/blogs"
+                href="/v2/blogs"
                 className="inline-flex items-center mt-4 px-6 py-2 text-indigo-300 border border-indigo-500 rounded-full hover:bg-indigo-500 hover:text-white transition-all duration-300"
               >
                 Explore Content <FaArrowRight className="ml-2" />
@@ -284,7 +284,7 @@ const LandingPage = () => {
                   className="group"
                 >
                   <Link
-                    href={`/blogs/${blog.category}/${blog.title}/${blog.slug}`}
+                    href={`/v2/blogs/${blog.category}/${blog.title}/${blog.slug}`}
                     className="block h-full bg-gradient-to-b from-gray-900/50 to-gray-950 rounded-2xl overflow-hidden border border-gray-800 hover:border-indigo-500 transition-all duration-300 shadow-lg hover:shadow-indigo-500/10"
                   >
                     <div className="relative h-56 overflow-hidden">
@@ -342,7 +342,7 @@ const LandingPage = () => {
             viewport={{ once: true }}
           >
             <Link
-              href="/blogs"
+              href="/v2/blogs"
               className="inline-flex items-center px-8 py-3.5 bg-gray-800 hover:bg-gray-700 text-white font-semibold rounded-full shadow-lg transition-all duration-300 group"
             >
               View All Posts <FaArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
@@ -389,7 +389,7 @@ const LandingPage = () => {
                   whileHover={{ scale: 1.05 }}
                 >
                   <Link
-                    href={`/blogs/${cat.category}`}
+                    href={`/v2/blogs/${cat.category}`}
                     className="block p-6 bg-gray-900/50 backdrop-blur-sm border border-gray-800 rounded-xl text-center hover:border-indigo-500 transition-all duration-300 shadow-lg hover:shadow-indigo-500/10"
                   >
                     <div className="w-12 h-12 rounded-full bg-indigo-900/30 flex items-center justify-center mx-auto mb-4">

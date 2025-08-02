@@ -29,7 +29,7 @@ const baseMenuItems = [
 
 const createMenuItems = [
   { title: "Create Blog", url: "/v2/blogs/create", icon: PlusCircle },
-  { title: "Create Category", url: "/blogs/category/create", icon: Bookmark },
+  { title: "Create Category", url: "/v2/blogs/category/create", icon: Bookmark },
 ];
 
 const utilityItems = [{ title: "Settings", url: "/settings", icon: Settings }];

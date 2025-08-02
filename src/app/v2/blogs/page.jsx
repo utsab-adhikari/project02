@@ -362,7 +362,7 @@ const Blogs = () => {
                     </div>
 
                     <Link
-                      href={`/blogs/${blog.category}/${blog.title}/${blog.slug}`}
+                      href={`/v2/blogs/${blog.category}/${blog.title}/${blog.slug}`}
                       className="mt-4 inline-flex items-center justify-center px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-medium rounded-lg shadow-md hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
                     >
                       Read More

@@ -16,12 +16,15 @@ import {
   FaCommentDots,
   FaEye,
   FaHeart,
+  FaChartLine,
+  FaEllipsisV,
+  FaArrowRight
 } from "react-icons/fa";
 import { FaSquareFacebook } from "react-icons/fa6";
 import { IoLogoWhatsapp } from "react-icons/io5";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { CiMenuKebab } from "react-icons/ci";
+import { motion, AnimatePresence } from "framer-motion";
 import { ContextMenu } from "@/v2Components/ContextMenu";
 
 export default function Dashboard() {
@@ -37,6 +40,7 @@ export default function Dashboard() {
     recentComments: [],
   });
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("blogs"); // 'blogs' or 'analytics'
 
   const isAdmin = session?.user?.role === "admin" || false;
 
@@ -48,7 +52,7 @@ export default function Dashboard() {
     if (status === "authenticated") {
       const fetchData = async () => {
         try {
-          const res = await axios.get(`/api/dashboard/${session.user.email}`);
+          const res = await axios.get(`/api/v2/dashboard/${session.user.email}`);
           const { profile, blogs, stats } = res.data;
 
           if (!profile) {
@@ -74,400 +78,351 @@ export default function Dashboard() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-950 text-indigo-400">
-        <FaSpinner className="animate-spin text-5xl mr-4" />
-        <span className="text-xl font-medium">Loading dashboard...</span>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-950 text-indigo-400">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <FaSpinner className="text-5xl" />
+        </motion.div>
+        <motion.p 
+          className="ml-4 text-xl"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          Loading your dashboard...
+        </motion.p>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex justify-center items-center bg-gray-950 text-red-500 text-2xl font-semibold">
-        Failed to load profile. Please try again.
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-950">
+        <FaSpinner className="animate-spin text-red-500 text-5xl mb-4" />
+        <h2 className="text-2xl font-bold text-red-400 mb-2">Profile not found</h2>
+        <p className="text-gray-400 mb-6 max-w-md text-center">
+          We couldn't load your profile. Please try again later.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg transition-colors"
+        >
+          Retry
+        </button>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="mb-10">
-        <div className="relative w-full h-40 bg-blue-600">
-          <p className="mx-auto text-center text-sm font-semibold text-green-400">
-            {" "}
-            Welcome ! to Dashboard (v2)
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-950 text-white">
+      {/* Floating particles */}
+      <div className="fixed top-20 left-10 w-4 h-4 rounded-full bg-purple-500 blur-xl animate-pulse z-0"></div>
+      <div className="fixed top-1/4 right-20 w-6 h-6 rounded-full bg-indigo-500 blur-xl animate-pulse z-0"></div>
+      <div className="fixed bottom-40 right-1/4 w-3 h-3 rounded-full bg-cyan-400 blur-xl animate-pulse z-0"></div>
+      
+      {/* Top Bar */}
+      <div className="sticky top-0 z-40 bg-gray-900/80 backdrop-blur-md border-b border-gray-800 py-4 px-6 flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <div className="bg-indigo-600 w-8 h-8 rounded-full flex items-center justify-center">
+            <FaChartLine className="text-white" />
+          </div>
+          <h1 className="text-xl font-bold text-indigo-300">Dashboard</h1>
+        </div>
+        
+        <div className="flex items-center gap-4">
           <button
             onClick={() => signOut()}
-            className="absolute bg-red-600/30 p-2 hover:bg-red-600/50 cursor-pointer flex items-center rounded-full top-2 right-2 font-semibold transition-all duration-300 shadow-md"
+            className="flex items-center gap-2 bg-red-600/20 hover:bg-red-600/40 px-3 py-2 rounded-lg text-red-300 hover:text-white transition-colors"
           >
             <FaSignOutAlt />
+            <span className="hidden sm:inline">Sign Out</span>
           </button>
-          <div className="">
-            <p className="text-xl right-3 font-semibold absolute bottom-0 ">
-              {profile.name}
-            </p>
+          
+          <Link 
+            href={`/v2/profile/${profile.email}`} 
+            className="flex items-center gap-2"
+          >
             <img
-              src={
-                profile.image ||
-                "https://placehold.co/150x150/222222/EEEEEE?text=Profile"
-              }
-              alt={`${profile.name}'s avatar`}
-              className="absolute mx-[10vw] h-20 w-20 rounded-full border-2 border-white bottom-[-40] "
+              src={profile.image || "https://avatar.vercel.sh/username"}
+              alt={profile.name}
+              className="w-8 h-8 rounded-full border-2 border-indigo-500/50"
             />
-          </div>
+            <span className="hidden md:inline text-sm text-gray-300 truncate max-w-[100px]">
+              {profile.name}
+            </span>
+          </Link>
         </div>
       </div>
-      <div className="pt-10">
-        <p className="text-indigo-200 font-semibold text-sm mx-auto text-center">
-          Overview
-        </p>
-        <AnalyticsSection stats={stats} />
-      </div>
-      <div className="px-5 py-2 flex justify-evenly items-center">
-        <Link
-          href="#"
-          className="bg-green-500 px-2 py-2 font-semibold hover:bg-green-400 rounded text-black text-sm"
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Welcome Banner */}
+        <motion.div 
+          className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 p-6 rounded-2xl border border-indigo-500/30 mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          Create Blog
-        </Link>
-        <Link
-          href="#"
-          className="bg-stone-600 px-2 py-2 rounded text-stone-200 font-semibold hover:bg-stone-500 text-sm"
-        >
-          AI Assistant
-        </Link>
-        {/* <Link href="#" className="bg-blue-300 px-2 py-2 rounded text-black text-sm" >Upgrade</Link> */}
-      </div>
-      <div className="">
-        {blogs.length === 0 ? (
-          <div className="">
-            <p className="text-gray-400 text-lg">
-              You haven't created any blog posts yet. Click "Create Post" above
-              to start!
-            </p>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-6 px-4 py-8">
-            {blogs.map((blog) => (
-              <div
-                key={blog._id}
-                className="relative flex bg-white/10 backdrop-blur-md rounded-xl overflow-hidden hover:shadow-lg transition-shadow"
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+              <h2 className="text-2xl font-bold text-indigo-300 mb-2">
+                Welcome back, {profile.name.split(' ')[0]}!
+              </h2>
+              <p className="text-gray-400">
+                Here's what's happening with your content
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Link
+                href="/v2/blogs/create"
+                className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white"
               >
-                {/* Three-dot context menu */}
-                <div className="absolute top-0 right-3 z-10">
-                  <ContextMenu blogId={blog._id} />
-                </div>
-
-                <Link
-                  href={`/blogs/${blog.category}/${blog.title}/${blog.slug}`}
-                  className="flex flex-row"
-                >
-                  {/* ✅ Image always on left */}
-                  <div className="flex-1 w-[120px] sm:w-[160px] md:w-[200px] h-auto shrink-0">
-                    {blog.featuredImage ? (
-                      <img
-                        src={blog.featuredImage}
-                        alt={blog.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-700 text-white text-sm">
-                        No Image
-                      </div>
-                    )}
-                  </div>
-
-                  {/* ✅ Text on the right */}
-                  <div className="p-4 flex flex-col justify-between max-w-[60vw]">
-                    <div>
-                      <h3 className="text-indigo-300 text-lg font-semibold truncate">
-                        {blog.title}
-                      </h3>
-                      <p className="text-sm text-gray-400">
-                        Published on{" "}
-                        {dayjs(blog.createdAt).format("MMM D, YYYY")}
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-4 mt-3">
-                      <p className="flex items-center text-sm gap-1 text-gray-300">
-                        {blog.views} <FaEye />
-                      </p>
-                      <p className="flex items-center text-sm gap-1 text-gray-300">
-                        {blog.likes} <FaHeart />
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            ))}
+                <FaPlus /> Create Blog
+              </Link>
+              <Link
+                href="/ai-tools"
+                className="flex items-center gap-2 px-5 py-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-white"
+              >
+                <FaRobot /> AI Assistant
+              </Link>
+            </div>
           </div>
-        )}
+        </motion.div>
+
+        {/* Tabs */}
+        <div className="flex border-b border-gray-800 mb-8">
+          <button
+            onClick={() => setActiveTab("blogs")}
+            className={`px-4 py-3 font-medium text-sm ${
+              activeTab === "blogs"
+                ? "text-indigo-400 border-b-2 border-indigo-500"
+                : "text-gray-400 hover:text-gray-300"
+            }`}
+          >
+            Your Blogs
+          </button>
+          <button
+            onClick={() => setActiveTab("analytics")}
+            className={`px-4 py-3 font-medium text-sm ${
+              activeTab === "analytics"
+                ? "text-indigo-400 border-b-2 border-indigo-500"
+                : "text-gray-400 hover:text-gray-300"
+            }`}
+          >
+            Analytics
+          </button>
+        </div>
+
+        {/* Content based on active tab */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {activeTab === "blogs" ? (
+              <BlogsTab blogs={blogs} />
+            ) : (
+              <AnalyticsTab stats={stats} />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
 }
 
-const AnalyticsSection = ({ stats }) => {
-  const cards = [
-    { title: "Total Blogs", value: stats.blogCount, icon: <FaBookOpen /> },
-    { title: "Total Views", value: stats.viewCount, icon: <FaEye /> },
-    { title: "Total Likes", value: stats.likeCount, icon: <FaHeart /> },
-    {
-      title: "Recent Comments",
-      value: stats.recentComments.length,
-      icon: <FaCommentDots />,
-    },
-  ];
-
+const BlogsTab = ({ blogs }) => {
   return (
-    <section className="p-6 grid grid-cols-2 md:grid-cols-4 gap-6 mb-10 max-w-7xl mx-auto">
-      {cards.map((c) => (
-        <div
-          key={c.title}
-          className="flex items-center bg-gray-800 p-4 rounded-lg"
-        >
-          <div className="text-indigo-400 text-3xl mr-4">{c.icon}</div>
-          <div>
-            <p className="text-2xl font-bold">{c.value}</p>
-            <p className="text-gray-400">{c.title}</p>
-          </div>
-        </div>
-      ))}
-    </section>
-  );
-};
-
-function ProfileSection({ profile }) {
-  return (
-    <section className="bg-gray-900 p-8 rounded-2xl border border-indigo-700 max-w-7xl mx-auto shadow-2xl mb-10 transform hover:scale-[1.005] transition-transform duration-300">
-      <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
-        <div className="relative">
-          <img
-            src={
-              profile.image ||
-              "https://placehold.co/150x150/222222/EEEEEE?text=Profile"
-            }
-            alt={`${profile.name}'s avatar`}
-            className="w-36 h-36 rounded-full object-cover border-4 border-indigo-600 shadow-xl"
-          />
-          <span className="absolute bottom-2 right-2 bg-green-500 w-4 h-4 rounded-full border-2 border-gray-900" />
-        </div>
-
-        <div className="flex-1 w-full text-center md:text-left">
-          <h2 className="text-4xl font-extrabold text-indigo-300 mb-1">
-            {profile.name}
-          </h2>
-          <p className="text-lg text-gray-400 mb-2">{profile.email}</p>
-          <p className="text-sm text-gray-500 mb-4">
-            Joined on {dayjs(profile.createdAt).format("MMMM D, YYYY")}
-          </p>
-
-          {profile.bio && (
-            <p className="mt-4 italic text-gray-300 text-lg leading-relaxed">
-              “{profile.bio}”
-            </p>
-          )}
-
-          <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-6">
-            {/* Socials */}
-            {profile.facebook && (
-              <SocialButton
-                url={profile.facebook}
-                icon={<FaSquareFacebook />}
-                text="Facebook"
-                className="bg-blue-700 hover:bg-blue-800"
-              />
-            )}
-            {profile.github && (
-              <SocialButton
-                url={profile.github}
-                icon={<FaGithubSquare />}
-                text="GitHub"
-                className="bg-gray-700 hover:bg-gray-800"
-              />
-            )}
-            {profile.contact && (
-              <SocialButton
-                url={`https://wa.me/${profile.contact}`}
-                icon={<IoLogoWhatsapp />}
-                text="WhatsApp"
-                className="bg-green-700 hover:bg-green-800"
-              />
-            )}
-            <SocialButton
-              url={`mailto:${profile.email}`}
-              icon={<FaEnvelope />}
-              text="Email"
-              className="bg-red-700 hover:bg-red-800"
-            />
-          </div>
-
-          <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-8">
-            <Link
-              href={`/profile/${profile.email}`}
-              className="px-7 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center gap-2 font-semibold transition-all shadow-lg transform hover:-translate-y-0.5"
-            >
-              <FaBookOpen /> View Profile
-            </Link>
-            <Link
-              href={`/profile/${profile.email}/update`}
-              className="px-7 py-3 bg-yellow-600 hover:bg-yellow-700 rounded-full flex items-center gap-2 font-semibold transition-all shadow-lg transform hover:-translate-y-0.5"
-            >
-              <FaRegEdit /> Update Profile
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SocialButton({ url, icon, text, className }) {
-  return (
-    <Link
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`flex items-center gap-2 ${className} px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 shadow-md`}
-    >
-      {icon} {text}
-    </Link>
-  );
-}
-
-function ActionCards({ isAdmin }) {
-  return (
-    <section className="w-full max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
-      <Card
-        href="/posts/create"
-        color="indigo"
-        icon={<FaPlus />}
-        title="Create Post"
-        description="Write a new blog post"
-      />
-      <Card
-        href="/blogs/create"
-        color="pink"
-        icon={<FaPlus />}
-        title="Create Blog"
-        description="Add a new blog category"
-      />
-      {isAdmin && (
-        <Card
-          href="/blogs/category/create"
-          color="teal"
-          icon={<FaPlus />}
-          title="Create Category"
-          description="Organize content with new categories"
-        />
-      )}
-      <Card
-        href="/ai-tools"
-        color="indigo"
-        icon={<FaRobot />}
-        title="AI Assistant"
-        description="Generate posts, get suggestions, chat with AI"
-      />
-    </section>
-  );
-}
-
-function Card({ href, color, icon, title, description }) {
-  const base = `bg-${color}-700 hover:bg-${color}-800`;
-  return (
-    <Link
-      href={href}
-      className={`${base} p-6 rounded-xl flex items-center gap-5 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1`}
-    >
-      <div className="p-3 rounded-full bg-white bg-opacity-10 text-2xl">
-        {icon}
-      </div>
-      <div>
-        <h3 className="font-bold text-xl mb-1">{title}</h3>
-        <p className="text-gray-300 text-sm">{description}</p>
-      </div>
-    </Link>
-  );
-}
-
-function RecentCommentsSection({ comments }) {
-  return (
-    <section className="bg-gray-900 p-6 rounded-xl border border-indigo-700 max-w-7xl mx-auto mb-10">
-      <h2 className="text-2xl font-bold text-indigo-400 mb-4">
-        Recent Comments
-      </h2>
-      {comments.length > 0 ? (
-        comments.map((c) => (
-          <div key={c.id} className="py-3 border-b border-gray-800">
-            <p className="text-sm text-gray-300">
-              <span className="text-indigo-200 font-semibold">{c.author}</span>{" "}
-              on{" "}
-              <Link
-                href={`/blogs/${c.blogSlug}`}
-                className="text-indigo-300 hover:underline"
-              >
-                {c.blogTitle}
-              </Link>
-              :
-            </p>
-            <p className="text-gray-400">
-              “{c.text.length > 80 ? c.text.slice(0, 80) + "…" : c.text}”
-            </p>
-          </div>
-        ))
-      ) : (
-        <p className="text-gray-500">No recent comments.</p>
-      )}
-    </section>
-  );
-}
-
-function BlogList({ blogs }) {
-  return (
-    <section className="w-full max-w-7xl mx-auto">
-      <h2 className="text-3xl font-bold text-indigo-400 mb-6">
-        Your Blog Posts
-      </h2>
+    <div>
       {blogs.length === 0 ? (
-        <div className="bg-gray-900 p-8 rounded-xl text-center border border-gray-700 shadow-inner">
-          <p className="text-gray-400 text-lg">
-            You haven't created any blog posts yet. Click "Create Post" above to
-            start!
+        <motion.div 
+          className="bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-800 p-12 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <FaBookOpen className="text-indigo-400 text-5xl mx-auto mb-6" />
+          <h3 className="text-2xl font-bold text-gray-300 mb-3">
+            No blogs created yet
+          </h3>
+          <p className="text-gray-500 max-w-md mx-auto mb-8">
+            Start sharing your knowledge with the world. Create your first blog post!
           </p>
-        </div>
+          <Link
+            href="/v2/blogs/create"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg text-white"
+          >
+            <FaPlus /> Create Your First Blog
+          </Link>
+        </motion.div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {blogs.map((blog) => (
-            <Link
+            <motion.div
               key={blog._id}
-              href={`/blogs/${blog.category}/${blog.title}/${blog.slug}`}
-              className="bg-gray-900 hover:border-indigo-500 border border-gray-800 rounded-xl shadow-lg overflow-hidden transform hover:-translate-y-1 hover:shadow-2xl transition"
+              className="bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-800 overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -10 }}
+              transition={{ duration: 0.3 }}
             >
-              {blog.featuredImage ? (
-                <img
-                  src={blog.featuredImage}
-                  alt={blog.title}
-                  className="w-full h-52 object-cover"
-                />
-              ) : (
-                <div className="w-full h-52 bg-gray-800 flex items-center justify-center text-gray-500 text-lg font-semibold">
-                  No Image
+              <div className="relative">
+                {blog.featuredImage ? (
+                  <img
+                    src={blog.featuredImage}
+                    alt={blog.title}
+                    className="w-full h-48 object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-48 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                    <span className="text-gray-500">No Image</span>
+                  </div>
+                )}
+                
+                <div className="absolute top-3 right-3">
+                  <ContextMenu blogId={blog._id} />
                 </div>
-              )}
-              <div className="p-5">
-                <h3 className="text-xl font-bold text-indigo-400 mb-2 leading-tight">
-                  {blog.title}
-                </h3>
-                <p className="text-sm text-gray-400">
-                  Published on {dayjs(blog.createdAt).format("MMM D, YYYY")}
-                </p>
+                
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4">
+                  <div className="flex justify-between text-xs text-white">
+                    <span className="flex items-center gap-1 bg-gray-900/70 px-2 py-1 rounded-full">
+                      <FaEye /> {blog.views || 0}
+                    </span>
+                    <span className="flex items-center gap-1 bg-gray-900/70 px-2 py-1 rounded-full">
+                      <FaHeart /> {blog.likes || 0}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </Link>
+              
+              <div className="p-5">
+                <div className="flex justify-between items-start mb-3">
+                  <h3 className="text-lg font-bold text-white truncate">
+                    {blog.title}
+                  </h3>
+                </div>
+                
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="text-xs bg-indigo-600/30 text-indigo-200 font-semibold px-2 py-1 rounded">
+                    {blog.category}
+                  </span>
+                  <span className="text-xs bg-gray-800 text-gray-300 px-2 py-1 rounded">
+                    {dayjs(blog.createdAt).format("MMM D, YYYY")}
+                  </span>
+                </div>
+                
+                <Link
+                  href={`/v2/blogs/${blog.category}/${blog.title}/${blog.slug}`}
+                  className="flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300"
+                >
+                  View Blog <FaArrowRight className="text-xs" />
+                </Link>
+              </div>
+            </motion.div>
           ))}
         </div>
       )}
-    </section>
+    </div>
   );
-}
+};
+
+const AnalyticsTab = ({ stats }) => {
+  return (
+    <div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <AnalyticsCard 
+          title="Total Blogs" 
+          value={stats.blogCount} 
+          icon={<FaBookOpen />} 
+          color="indigo"
+        />
+        <AnalyticsCard 
+          title="Total Views" 
+          value={stats.viewCount} 
+          icon={<FaEye />} 
+          color="green"
+        />
+        <AnalyticsCard 
+          title="Total Likes" 
+          value={stats.likeCount} 
+          icon={<FaHeart />} 
+          color="red"
+        />
+        <AnalyticsCard 
+          title="Recent Comments" 
+          value={stats.recentComments.length} 
+          icon={<FaCommentDots />} 
+          color="yellow"
+        />
+      </div>
+      
+      {stats.recentComments.length > 0 && (
+        <motion.div 
+          className="bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-800 p-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <h3 className="text-lg font-bold text-gray-300 mb-4 flex items-center gap-2">
+            <FaCommentDots className="text-indigo-400" /> Recent Comments
+          </h3>
+          
+          <div className="space-y-4">
+            {stats.recentComments.map((comment) => (
+              <div 
+                key={comment.id} 
+                className="p-4 bg-gray-800/50 rounded-lg border border-gray-700"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex-1">
+                    <p className="text-gray-300 mb-1">{comment.text}</p>
+                    <p className="text-xs text-gray-500">
+                      By {comment.author} on {dayjs(comment.createdAt).format("MMM D")}
+                    </p>
+                  </div>
+                  <Link 
+                    href={`/v2/blogs/${comment.blogSlug}`}
+                    className="text-xs text-indigo-400 hover:text-indigo-300"
+                  >
+                    View Post
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
+    </div>
+  );
+};
+
+const AnalyticsCard = ({ title, value, icon, color }) => {
+  const colorClasses = {
+    indigo: "bg-indigo-900/20 text-indigo-400 border-indigo-800",
+    green: "bg-green-900/20 text-green-400 border-green-800",
+    red: "bg-red-900/20 text-red-400 border-red-800",
+    yellow: "bg-yellow-900/20 text-yellow-400 border-yellow-800",
+  };
+  
+  return (
+    <motion.div 
+      className={`p-5 rounded-2xl border ${colorClasses[color]} backdrop-blur-sm`}
+      whileHover={{ scale: 1.03 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="text-sm text-gray-400 mb-1">{title}</p>
+          <p className="text-2xl font-bold">{value}</p>
+        </div>
+        <div className="p-3 rounded-full bg-white/10">
+          {icon}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
