@@ -21,9 +21,7 @@ import {
 import "leaflet/dist/leaflet.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { FaSpinner } from "react-icons/fa";
-
 
 // Dynamically import MapContainer and related components to disable SSR
 const MapContainer = dynamic(
@@ -77,6 +75,7 @@ const countryCoords = {
   IT: { lat: 41.8719, lng: 12.5674 }, // Italy
   // Add more as needed
 };
+import { motion, AnimatePresence } from "framer-motion";
 
 // Colors for Pie Charts
 const PIE_COLORS = [
@@ -92,16 +91,43 @@ const PIE_COLORS = [
 
 export default function AnalyticsDashboard() {
   const { data: session, status } = useSession();
+  const [loading, setLoading] = useState("");
   const router = useRouter();
   const { data, error } = useSWR("/api/v2/admin/analytic", fetcher);
   const [mounted, setMounted] = useState(false); // State to track if component is mounted
 
   useEffect(() => {
+    if (status === "loading") {
+      setLoading("loading");
+    }
+
     if (status === "unauthenticated" || session?.user?.role !== "admin") {
       router.push("/");
     }
+    setLoading("");
     setMounted(true);
   }, []);
+
+  if (status === "loading" || loading === "loading" || !data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-950 text-indigo-400">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <FaSpinner className="text-5xl" />
+        </motion.div>
+        <motion.p
+          className="ml-4 text-xl"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          Loading Session...
+        </motion.p>
+      </div>
+    );
+  }
 
   if (error)
     return (
@@ -110,7 +136,6 @@ export default function AnalyticsDashboard() {
         connection.
       </p>
     );
-  if (!data) return <Loader />; // Display a loader while data is being fetched
 
   const { realtime, pages, summary, device, source } = data;
 
@@ -152,27 +177,6 @@ export default function AnalyticsDashboard() {
       source: r.dimensionValues[0].value,
       users: +r.metricValues[0].value,
     })) || [];
-
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-950 text-indigo-400">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-        >
-          <FaSpinner className="text-5xl" />
-        </motion.div>
-        <motion.p
-          className="ml-4 text-xl"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-        >
-          Loading Session...
-        </motion.p>
-      </div>
-    );
-  }
 
   return (
     <div className="p-4 sm:p-8 space-y-8 sm:space-y-10 min-h-screen text-gray-100 font-inter">
