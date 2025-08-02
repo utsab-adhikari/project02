@@ -3,17 +3,30 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
-import { FiSearch, FiUser, FiMail, FiTrash2, FiClock, FiCalendar, FiEdit } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+
+import {
+  FiSearch,
+  FiUser,
+  FiMail,
+  FiTrash2,
+  FiClock,
+  FiCalendar,
+  FiEdit,
+} from "react-icons/fi";
 import { format } from "date-fns";
+import { useSession } from "next-auth/react";
+import { FaSpinner } from "react-icons/fa";
 
 const Page = () => {
   const [loading, setLoading] = useState(false);
+  const { data: session, status } = useSession();
   const [users, setUsers] = useState([]);
   const [pagination, setPagination] = useState({
     currentPage: 1,
     totalPages: 1,
     totalUsers: 0,
-    limit: 10
+    limit: 10,
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [deletingId, setDeletingId] = useState(null);
@@ -22,9 +35,12 @@ const Page = () => {
   const fetchUsers = useCallback(async (page = 1, search = "") => {
     setLoading(true);
     try {
-      const res = await axios.get(`/api/v2/user?page=${page}&limit=10&search=${search}`, {
-        withCredentials: true,
-      });
+      const res = await axios.get(
+        `/api/v2/user?page=${page}&limit=10&search=${search}`,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (res.data.success) {
         setUsers(res.data.data.users);
@@ -32,7 +48,7 @@ const Page = () => {
           currentPage: res.data.data.pagination.currentPage,
           totalPages: res.data.data.pagination.totalPages,
           totalUsers: res.data.data.pagination.totalUsers,
-          limit: res.data.data.pagination.limit
+          limit: res.data.data.pagination.limit,
         });
       } else {
         toast.error("Failed to load users.");
@@ -46,6 +62,9 @@ const Page = () => {
   }, []);
 
   useEffect(() => {
+    if (status === "unauthenticated" || session?.user?.role !== "admin") {
+      router.push("/");
+    }
     fetchUsers();
   }, [fetchUsers]);
 
@@ -71,8 +90,12 @@ const Page = () => {
 
   const handleDelete = async (e, id, name) => {
     e.stopPropagation();
-    
-    if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
+
+    if (
+      !confirm(
+        `Are you sure you want to delete ${name}? This action cannot be undone.`
+      )
+    ) {
       return;
     }
 
@@ -81,7 +104,7 @@ const Page = () => {
       const res = await axios.delete(`/api/v2/user?id=${id}`, {
         withCredentials: true,
       });
-      
+
       if (res.data.success) {
         toast.success("User deleted successfully.");
         fetchUsers(pagination.currentPage, searchQuery);
@@ -98,11 +121,11 @@ const Page = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "Never";
-    
+
     const date = new Date(dateString);
     const now = new Date();
     const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       return "Today at " + format(date, "h:mm a");
     } else if (diffDays === 1) {
@@ -110,9 +133,30 @@ const Page = () => {
     } else if (diffDays < 7) {
       return format(date, "EEE 'at' h:mm a");
     }
-    
+
     return format(date, "MMM d, yyyy");
   };
+
+  if (status === "loading" || loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-950 text-indigo-400">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+        >
+          <FaSpinner className="text-5xl" />
+        </motion.div>
+        <motion.p
+          className="ml-4 text-xl"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          Loading your dashboard...
+        </motion.p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 sm:p-6 max-w-7xl mx-auto">
@@ -123,10 +167,11 @@ const Page = () => {
             <span>User Directory</span>
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            {pagination.totalUsers} users found • Page {pagination.currentPage} of {pagination.totalPages}
+            {pagination.totalUsers} users found • Page {pagination.currentPage}{" "}
+            of {pagination.totalPages}
           </p>
         </div>
-        
+
         <form onSubmit={handleSearch} className="relative w-full sm:w-64">
           <input
             type="text"
@@ -177,7 +222,7 @@ const Page = () => {
                         <FiMail className="text-gray-500" size={14} />
                         {user.email}
                       </p>
-                      
+
                       <div className="mt-3 space-y-1">
                         <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                           <FiCalendar size={14} />
@@ -190,7 +235,7 @@ const Page = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex justify-end gap-2 mt-4">
                     <button
                       onClick={(e) => handleEdit(e, user._id)}
@@ -228,12 +273,14 @@ const Page = () => {
                   No users found
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400">
-                  {searchQuery ? "Try a different search term" : "Create your first user"}
+                  {searchQuery
+                    ? "Try a different search term"
+                    : "Create your first user"}
                 </p>
               </div>
             )}
           </div>
-          
+
           {/* Pagination */}
           {pagination.totalPages > 1 && (
             <div className="flex justify-center items-center gap-4 mt-6">
@@ -244,11 +291,11 @@ const Page = () => {
               >
                 Previous
               </button>
-              
+
               <span className="text-gray-700 dark:text-gray-300">
                 Page {pagination.currentPage} of {pagination.totalPages}
               </span>
-              
+
               <button
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
                 disabled={pagination.currentPage === pagination.totalPages}
