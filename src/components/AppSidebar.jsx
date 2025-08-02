@@ -22,13 +22,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 
 const baseMenuItems = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Blogs", url: "/blogs", icon: Newspaper },
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+  { title: "Home", url: "/v2", icon: Home },
+  { title: "Blogs", url: "/v2/blogs", icon: Newspaper },
+  { title: "Dashboard", url: "/v2/dashboard", icon: LayoutDashboard },
 ];
 
 const createMenuItems = [
-  { title: "Create Blog", url: "/blogs/create", icon: PlusCircle },
+  { title: "Create Blog", url: "/v2/blogs/create", icon: PlusCircle },
   { title: "Create Category", url: "/blogs/category/create", icon: Bookmark },
 ];
 
@@ -203,13 +203,8 @@ export function AppSidebar() {
               {!isLoggedIn ? (
                 <>
                   <NavItem 
-                    item={{ title: "Login", url: "/authenticate", icon: LogIn }} 
+                    item={{ title: "Login", url: "/v2/authenticate", icon: LogIn }} 
                     index={0}
-                    toggleSidebar={isMobile ? toggleSidebar : undefined}
-                  />
-                  <NavItem 
-                    item={{ title: "Signup", url: "/signup", icon: UserRoundPlus }} 
-                    index={1}
                     toggleSidebar={isMobile ? toggleSidebar : undefined}
                   />
                 </>
