@@ -105,8 +105,6 @@ export default function RootLayout({ children }) {
                       {children}
                     </motion.div>
                   </AnimatePresence>
-                  
-                  <NotLoggedIn />
                 </main>
 
                 {/* Mobile Home Button */}
