@@ -18,7 +18,7 @@ import {
   FaHeart,
   FaChartLine,
   FaEllipsisV,
-  FaArrowRight
+  FaArrowRight,
 } from "react-icons/fa";
 import { FaSquareFacebook } from "react-icons/fa6";
 import { IoLogoWhatsapp } from "react-icons/io5";
@@ -26,6 +26,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ContextMenu } from "@/v2Components/ContextMenu";
+import DraftTab from "./DraftTab";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -33,6 +34,7 @@ export default function Dashboard() {
 
   const [profile, setProfile] = useState(null);
   const [blogs, setBlogs] = useState([]);
+  const [drafts, setDrafts] = useState([]);
   const [stats, setStats] = useState({
     blogCount: 0,
     viewCount: 0,
@@ -52,8 +54,10 @@ export default function Dashboard() {
     if (status === "authenticated") {
       const fetchData = async () => {
         try {
-          const res = await axios.get(`/api/v2/dashboard/${session.user.email}`);
-          const { profile, blogs, stats } = res.data;
+          const res = await axios.get(
+            `/api/v2/dashboard/${session.user.email}`
+          );
+          const { profile, blogs, drafts, stats } = res.data;
 
           if (!profile) {
             toast.error("Profile not found.");
@@ -63,6 +67,7 @@ export default function Dashboard() {
 
           setProfile(profile);
           setBlogs(blogs);
+          setDrafts(drafts);
           setStats(stats);
         } catch (err) {
           toast.error("Failed to fetch dashboard data.");
@@ -85,7 +90,7 @@ export default function Dashboard() {
         >
           <FaSpinner className="text-5xl" />
         </motion.div>
-        <motion.p 
+        <motion.p
           className="ml-4 text-xl"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -101,7 +106,9 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-950">
         <FaSpinner className="animate-spin text-red-500 text-5xl mb-4" />
-        <h2 className="text-2xl font-bold text-red-400 mb-2">Profile not found</h2>
+        <h2 className="text-2xl font-bold text-red-400 mb-2">
+          Profile not found
+        </h2>
         <p className="text-gray-400 mb-6 max-w-md text-center">
           We couldn't load your profile. Please try again later.
         </p>
@@ -121,7 +128,7 @@ export default function Dashboard() {
       <div className="fixed top-20 left-10 w-4 h-4 rounded-full bg-purple-500 blur-xl animate-pulse z-0"></div>
       <div className="fixed top-1/4 right-20 w-6 h-6 rounded-full bg-indigo-500 blur-xl animate-pulse z-0"></div>
       <div className="fixed bottom-40 right-1/4 w-3 h-3 rounded-full bg-cyan-400 blur-xl animate-pulse z-0"></div>
-      
+
       {/* Top Bar */}
       <div className="sticky top-0 z-40 bg-gray-900/80 backdrop-blur-md border-b border-gray-800 py-4 px-6 flex justify-between items-center">
         <div className="flex items-center gap-2">
@@ -130,7 +137,7 @@ export default function Dashboard() {
           </div>
           <h1 className="text-xl font-bold text-indigo-300">Dashboard</h1>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <button
             onClick={() => signOut()}
@@ -139,9 +146,9 @@ export default function Dashboard() {
             <FaSignOutAlt />
             <span className="hidden sm:inline">Sign Out</span>
           </button>
-          
-          <Link 
-            href={`/v2/profile/${profile.email}`} 
+
+          <Link
+            href={`/v2/profile/${profile.email}`}
             className="flex items-center gap-2"
           >
             <img
@@ -158,7 +165,7 @@ export default function Dashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Banner */}
-        <motion.div 
+        <motion.div
           className="bg-gradient-to-r from-indigo-900/30 to-purple-900/30 p-6 rounded-2xl border border-indigo-500/30 mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -167,7 +174,7 @@ export default function Dashboard() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <div>
               <h2 className="text-2xl font-bold text-indigo-300 mb-2">
-                Welcome back, {profile.name.split(' ')[0]}!
+                Welcome back, {profile.name.split(" ")[0]}!
               </h2>
               <p className="text-gray-400">
                 Here's what's happening with your content
@@ -212,6 +219,16 @@ export default function Dashboard() {
           >
             Analytics
           </button>
+          <button
+            onClick={() => setActiveTab("drafts")}
+            className={`px-4 py-3 font-medium text-sm ${
+              activeTab === "drafts"
+                ? "text-indigo-400 border-b-2 border-indigo-500"
+                : "text-gray-400 hover:text-gray-300"
+            }`}
+          >
+            Drafts
+          </button>
         </div>
 
         {/* Content based on active tab */}
@@ -223,11 +240,9 @@ export default function Dashboard() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
           >
-            {activeTab === "blogs" ? (
-              <BlogsTab blogs={blogs} />
-            ) : (
-              <AnalyticsTab stats={stats} />
-            )}
+            {activeTab === "blogs" && <BlogsTab blogs={blogs} />}
+            {activeTab === "analytics" && <AnalyticsTab stats={stats} />}
+            {activeTab === "drafts" && <DraftTab drafts={drafts} />}
           </motion.div>
         </AnimatePresence>
       </div>
@@ -239,7 +254,7 @@ const BlogsTab = ({ blogs }) => {
   return (
     <div>
       {blogs.length === 0 ? (
-        <motion.div 
+        <motion.div
           className="bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-800 p-12 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -250,7 +265,8 @@ const BlogsTab = ({ blogs }) => {
             No blogs created yet
           </h3>
           <p className="text-gray-500 max-w-md mx-auto mb-8">
-            Start sharing your knowledge with the world. Create your first blog post!
+            Start sharing your knowledge with the world. Create your first blog
+            post!
           </p>
           <Link
             href="/v2/blogs/create"
@@ -282,11 +298,11 @@ const BlogsTab = ({ blogs }) => {
                     <span className="text-gray-500">No Image</span>
                   </div>
                 )}
-                
+
                 <div className="absolute top-3 right-3">
                   <ContextMenu blogId={blog._id} />
                 </div>
-                
+
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4">
                   <div className="flex justify-between text-xs text-white">
                     <span className="flex items-center gap-1 bg-gray-900/70 px-2 py-1 rounded-full">
@@ -298,14 +314,14 @@ const BlogsTab = ({ blogs }) => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="p-5">
                 <div className="flex justify-between items-start mb-3">
                   <h3 className="text-lg font-bold text-white truncate">
                     {blog.title}
                   </h3>
                 </div>
-                
+
                 <div className="flex flex-wrap gap-2 mb-4">
                   <span className="text-xs bg-indigo-600/30 text-indigo-200 font-semibold px-2 py-1 rounded">
                     {blog.category}
@@ -314,7 +330,7 @@ const BlogsTab = ({ blogs }) => {
                     {dayjs(blog.createdAt).format("MMM D, YYYY")}
                   </span>
                 </div>
-                
+
                 <Link
                   href={`/v2/blogs/${blog.category}/${blog.title}/${blog.slug}`}
                   className="flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300"
@@ -334,34 +350,34 @@ const AnalyticsTab = ({ stats }) => {
   return (
     <div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <AnalyticsCard 
-          title="Total Blogs" 
-          value={stats.blogCount} 
-          icon={<FaBookOpen />} 
+        <AnalyticsCard
+          title="Total Blogs"
+          value={stats.blogCount}
+          icon={<FaBookOpen />}
           color="indigo"
         />
-        <AnalyticsCard 
-          title="Total Views" 
-          value={stats.viewCount} 
-          icon={<FaEye />} 
+        <AnalyticsCard
+          title="Total Views"
+          value={stats.viewCount}
+          icon={<FaEye />}
           color="green"
         />
-        <AnalyticsCard 
-          title="Total Likes" 
-          value={stats.likeCount} 
-          icon={<FaHeart />} 
+        <AnalyticsCard
+          title="Total Likes"
+          value={stats.likeCount}
+          icon={<FaHeart />}
           color="red"
         />
-        <AnalyticsCard 
-          title="Recent Comments" 
-          value={stats.recentComments.length} 
-          icon={<FaCommentDots />} 
+        <AnalyticsCard
+          title="Recent Comments"
+          value={stats.recentComments.length}
+          icon={<FaCommentDots />}
           color="yellow"
         />
       </div>
-      
+
       {stats.recentComments.length > 0 && (
-        <motion.div 
+        <motion.div
           className="bg-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-800 p-6"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -370,21 +386,22 @@ const AnalyticsTab = ({ stats }) => {
           <h3 className="text-lg font-bold text-gray-300 mb-4 flex items-center gap-2">
             <FaCommentDots className="text-indigo-400" /> Recent Comments
           </h3>
-          
+
           <div className="space-y-4">
             {stats.recentComments.map((comment) => (
-              <div 
-                key={comment.id} 
+              <div
+                key={comment.id}
                 className="p-4 bg-gray-800/50 rounded-lg border border-gray-700"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex-1">
                     <p className="text-gray-300 mb-1">{comment.text}</p>
                     <p className="text-xs text-gray-500">
-                      By {comment.author} on {dayjs(comment.createdAt).format("MMM D")}
+                      By {comment.author} on{" "}
+                      {dayjs(comment.createdAt).format("MMM D")}
                     </p>
                   </div>
-                  <Link 
+                  <Link
                     href={`/v2/blogs/${comment.blogSlug}`}
                     className="text-xs text-indigo-400 hover:text-indigo-300"
                   >
@@ -407,9 +424,9 @@ const AnalyticsCard = ({ title, value, icon, color }) => {
     red: "bg-red-900/20 text-red-400 border-red-800",
     yellow: "bg-yellow-900/20 text-yellow-400 border-yellow-800",
   };
-  
+
   return (
-    <motion.div 
+    <motion.div
       className={`p-5 rounded-2xl border ${colorClasses[color]} backdrop-blur-sm`}
       whileHover={{ scale: 1.03 }}
       transition={{ type: "spring", stiffness: 300 }}
@@ -419,9 +436,7 @@ const AnalyticsCard = ({ title, value, icon, color }) => {
           <p className="text-sm text-gray-400 mb-1">{title}</p>
           <p className="text-2xl font-bold">{value}</p>
         </div>
-        <div className="p-3 rounded-full bg-white/10">
-          {icon}
-        </div>
+        <div className="p-3 rounded-full bg-white/10">{icon}</div>
       </div>
     </motion.div>
   );

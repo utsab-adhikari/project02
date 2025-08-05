@@ -29,22 +29,39 @@ const CreateBlog = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // Debounce function to limit state updates
-  const debounce = (func, delay) => {
-    let timeoutId;
-    return (...args) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func(...args), delay);
-    };
+  const handleEditorChange = (value) => {
+    setFormData((prev) => ({ ...prev, blogcontent: value }));
   };
 
-  // Debounced editor change handler
-  const handleEditorChange = useCallback(
-    debounce((value) => {
-      setFormData((prev) => ({ ...prev, blogcontent: value }));
-    }, 300),
-    []
-  );
+  // Common submission handler
+  const handleSubmission = async (publishType) => {
+    setSubmitting(true);
+
+    // Validate required fields
+    if (!formData.title || !formData.slug || !formData.category || !imageUrl || !formData.blogcontent) {
+      toast.error(
+        "Please fill all required fields and upload a featured image"
+      );
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      const res = await axios.post(`/api/v2/blog/create`, {
+        ...formData,
+        featuredImage: imageUrl,
+        publishType,
+      });
+
+      toast.success(res.data.message);
+      // router.push("/blogs");
+    } catch (err) {
+      console.error("Submission error:", err);
+      toast.error(err.response?.data?.message || "Something went wrong");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -63,71 +80,14 @@ const CreateBlog = () => {
     }
   }, [session, router]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setSubmitting(true);
-
-    if (!imageUrl) {
-      toast.error("Please upload a featured image");
-      setSubmitting(false);
-      return;
-    }
-
-    try {
-      const res = await axios.post(`/api/v2/blog/create`, {
-        ...formData,
-        featuredImage: imageUrl,
-        publishType: "published",
-      });
-      toast.success(res.data.message || "Blog created successfully!");
-      setFormData({
-        title: "",
-        slug: "",
-        category: "",
-        featuredImage: "",
-        blogcontent: "",
-      });
-      setImageUrl("");
-      router.push("/blogs");
-    } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.message || "Something went wrong.");
-    } finally {
-      setSubmitting(false);
-    }
+    handleSubmission("published");
   };
-  const handleDraft = async (e) => {
+
+  const handleDraft = (e) => {
     e.preventDefault();
-    setSubmitting(true);
-
-    if (!imageUrl) {
-      toast.error("Please upload a featured image");
-      setSubmitting(false);
-      return;
-    }
-
-    try {
-      const res = await axios.post(`/api/v2/blog/create`, {
-        ...formData,
-        featuredImage: imageUrl,
-        publishType: "draft",
-      });
-      toast.success(res.data.message || "Blog created successfully!");
-      setFormData({
-        title: "",
-        slug: "",
-        category: "",
-        featuredImage: "",
-        blogcontent: "",
-      });
-      setImageUrl("");
-      router.push("/blogs");
-    } catch (err) {
-      console.error(err);
-      toast.error(err.response?.data?.message || "Something went wrong.");
-    } finally {
-      setSubmitting(false);
-    }
+    handleSubmission("draft");
   };
 
   const handleImageUpload = (url) => {

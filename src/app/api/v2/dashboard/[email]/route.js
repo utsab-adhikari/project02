@@ -15,7 +15,8 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const blogs = await Blog.find({ authorId: profile._id }).sort({ createdAt: -1 });
+    const blogs = await Blog.find({ authorId: profile._id, publishType: "published" }).sort({ createdAt: -1 });
+    const drafts = await Blog.find({ authorId: profile._id, publishType: "draft" }).sort({ createdAt: -1 });
 
     const blogCount = blogs.length;
     const viewCount = blogs.reduce((acc, curr) => acc + (curr.views || 0), 0);
@@ -41,6 +42,7 @@ export async function GET(request, { params }) {
     return NextResponse.json({
       profile,
       blogs,
+      drafts,
       stats: {
         blogCount,
         viewCount,

@@ -58,7 +58,7 @@ const BlogHeader = ({ blog, author, likes, views }) => (
     </div>
     {author && (
       <Link
-        href={`/profile/${author.email}`}
+        href={`/v2/profile/${author.email}`}
         className="flex items-center gap-3 transition-colors duration-200 hover:text-indigo-400"
       >
         <img

@@ -14,7 +14,7 @@ const Blogs = () => {
     const getBlogs = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`/api/blog/getall`, {
+        const res = await axios.get(`/api/v2/blog/getall`, {
           withCredentials: true,
         });
 

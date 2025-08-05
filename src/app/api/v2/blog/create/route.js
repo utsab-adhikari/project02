@@ -5,48 +5,60 @@ import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
-
   try {
-
     await connectDB();
-
     const data = await request.json();
 
-    const category = data.category;
+    // Validate required fields
+    if (!data.authorid || !data.title || !data.slug || !data.category) {
+      return NextResponse.json({
+        success: false,
+        status: 400,
+        message: "Missing required fields",
+      });
+    }
 
-    const authoR = await User.findOne({_id: data.authorid});
+    // Find author
+    const author = await User.findById(data.authorid);
+    if (!author) {
+      return NextResponse.json({
+        success: false,
+        status: 404,
+        message: "Author not found",
+      });
+    }
 
-    const authorname = authoR.name;
+    // Find or create category
+    let category = await Category.findOne({ category: data.category });
+    if (!category) {
+      category = await Category.create({ category: data.category });
+    }
 
-    const cat = await Category.findOne({category});
-
-    const blog = new Blog({
-      author: authorname,
+    // Create blog
+    const blog = await Blog.create({
+      author: author.name,
       authorId: data.authorid,
       category: data.category,
-      catid: cat._id,
+      catid: category._id,
       title: data.title,
       slug: data.slug,
       featuredImage: data.featuredImage,
       blogcontent: data.blogcontent,
-      publishType: data.publishType 
+      publishType: data.publishType || "draft" // Default to draft
     });
-
-    console.log(blog);
-    
-    await blog.save();
 
     return NextResponse.json({
       success: true,
       status: 201,
-      message: "Blog added successgully",
+      message: `Blog ${data.publishType === 'published' ? 'published' : 'saved as draft'} successfully`,
+      blog
     });
   } catch (error) {
-    console.log(error);
+    console.error("Blog creation error:", error);
     return NextResponse.json({
       success: false,
       status: 500,
-      message: ["Internal Server Error", error.message],
+      message: error.message || "Internal Server Error",
     });
   }
 }

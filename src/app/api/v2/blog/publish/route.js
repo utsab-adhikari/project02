@@ -2,19 +2,18 @@ import connectDB from "@/db/ConnectDB";
 import Blog from "@/models/blogModel";
 import { NextResponse } from "next/server";
 
-export async function GET(request) {
+export async function PUT(request) {
+  await connectDB();
+
   try {
+    const { blogId } =  await request.json();
 
-    await connectDB();
-
-    const blogs = await Blog.find({publishType: "published"}).sort({ createdAt: -1 });
-
+    await Blog.findByIdAndUpdate( blogId, { publishType: "published"});
     return NextResponse.json({
-      success: true,
-      status: 201,
-      message: "Blog Loaded successgully",
-      blogs
-    });
+        success: true,
+        status: 201,
+        message: "Blog Published",
+    })
   } catch (error) {
     return NextResponse.json({
       success: false,
