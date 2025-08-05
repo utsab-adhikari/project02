@@ -37,7 +37,7 @@ const LandingPage = () => {
   useEffect(() => {
     const getBlogs = async () => {
       try {
-        const res = await axios.get(`/api/blog/getall`, {
+        const res = await axios.get(`/api/v2/blog/getall`, {
           withCredentials: true,
         });
         setBlogs(res.data.blogs.slice(0, 3));
