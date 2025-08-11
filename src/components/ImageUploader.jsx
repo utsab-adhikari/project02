@@ -71,7 +71,7 @@ export default function ImageUploader({ onUpload }) {
           Uploading image...
         </div>
       ) : (
-        <label className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm rounded-md cursor-pointer transition">
+          <label className="inline-flex items-center gap-2 px-4 py-2 w-full shadow-sm border bg-white hover:shadow-md text-center font-medium text-sm rounded-md cursor-pointer transition">
           <AiOutlineCloudUpload className="text-lg" />
           Upload Image
           <input

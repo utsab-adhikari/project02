@@ -1,5 +1,34 @@
 import mongoose from 'mongoose';
 
+const followersSchema = new mongoose.Schema(
+  {
+    followedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    followerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      unique: true,
+    },
+  },
+  { _id: false }
+);
+const followingSchema = new mongoose.Schema(
+  {
+    followedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    followingId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      unique: true,
+    },
+  },
+  { _id: false }
+);
+
 const UserSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
@@ -23,7 +52,13 @@ const UserSchema = new mongoose.Schema({
   },
   github: {
     type: String,
-  }
+  },
+  followers: [followersSchema],
+  following: [followingSchema],
+  verifyToken: String,
+  verifyTokenExpiresAt: Date,
+  forgetPasswordToken: String,
+  forgetPasswordTokenExpireesAt: String,
 
 }, {timestamps: true});
 

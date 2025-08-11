@@ -1,117 +1,118 @@
-import React from "react";
-import { 
-  FaFacebookF, 
-  FaGithub, 
-  FaLinkedinIn, 
-  FaEnvelope, 
-  FaHeart,
-  FaCode
-} from "react-icons/fa";
-import { motion } from "framer-motion";
+import Link from "next/link";
 
-const Footer = () => {
-  const currentYear = new Date().getFullYear();
-  
-  const socialLinks = [
-    {
-      icon: <FaFacebookF />,
-      href: "https://facebook.com",
-      label: "Facebook"
-    },
-    {
-      icon: <FaLinkedinIn />,
-      href: "https://linkedin.com",
-      label: "LinkedIn"
-    },
-    {
-      icon: <FaGithub />,
-      href: "https://github.com/utsab-ad",
-      label: "GitHub"
-    },
-    {
-      icon: <FaEnvelope />,
-      href: "mailto:utsabadhikari075@gmail.com",
-      label: "Email"
-    }
-  ];
-
+export default function Footer() {
   return (
-    <footer className="w-full bg-gradient-to-b from-gray-900 to-black border-t border-gray-800 pt-12 pb-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-8">
-          {/* Branding and description */}
-          <div className="text-center md:text-left max-w-md">
-            <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
-              <div className="bg-indigo-600 w-8 h-8 rounded-full flex items-center justify-center">
-                <FaCode className="text-white text-sm" />
-              </div>
-              <span className="text-xl font-bold text-indigo-300 tracking-tight">
-                BlogSphere
-              </span>
+    <footer className="bg-gray-50 border-t mt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <div className="flex items-center">
+              <img
+                src="https://res.cloudinary.com/dnh6hzxuh/image/upload/v1754571700/gbu4itwsz5wwwfaotppz.png"
+                alt=""
+                className="bg-blue-300b h-30 w-40"
+              />
             </div>
-            <p className="text-gray-400 text-sm">
-              A vibrant platform for sharing insights, tutorials, and stories on technology, 
-              education, and more.
+            <p className="mt-4 text-gray-600 text-sm">
+              Exploring the core of knowledge through insightful articles and
+              expert perspectives.
             </p>
           </div>
 
-          {/* Social links */}
-          <div className="flex flex-col items-center">
-            <h3 className="text-gray-300 font-medium mb-4 text-sm uppercase tracking-wider">
-              Connect with me
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Quick Links
             </h3>
-            <div className="flex space-x-4">
-              {socialLinks.map((link, index) => (
-                <motion.a
-                  key={index}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-indigo-600 transition-all duration-300 group"
-                  whileHover={{ y: -5 }}
-                  aria-label={link.label}
-                >
-                  <motion.span 
-                    whileHover={{ scale: 1.2 }}
-                    className="text-base"
+            <ul className="space-y-2">
+              {[
+                ["Home", "/"],
+                ["Articles", "/articles"],
+                ["Categories", "/categories"],
+                ["About Us", "/about"],
+              ].map(([title, url]) => (
+                <li key={title}>
+                  <Link
+                    href={url}
+                    className="text-gray-600 hover:text-blue-600 text-sm"
                   >
-                    {link.icon}
-                  </motion.span>
-                </motion.a>
+                    {title}
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Resources
+            </h3>
+            <ul className="space-y-2">
+              {[
+                ["Blog", "/blog"],
+                ["Help Center", "/help"],
+                ["Community", "/community"],
+                ["Contribute", "/contribute"],
+              ].map(([title, url]) => (
+                <li key={title}>
+                  <Link
+                    href={url}
+                    className="text-gray-600 hover:text-blue-600 text-sm"
+                  >
+                    {title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Legal</h3>
+            <ul className="space-y-2">
+              {[
+                ["Terms of Service", "/terms"],
+                ["Privacy Policy", "/privacy"],
+                ["Cookie Policy", "/cookies"],
+                ["Licensing", "/licensing"],
+              ].map(([title, url]) => (
+                <li key={title}>
+                  <Link
+                    href={url}
+                    className="text-gray-600 hover:text-blue-600 text-sm"
+                  >
+                    {title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
-        {/* Copyright and attribution */}
-        <div className="mt-12 pt-6 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-gray-500 text-sm text-center">
-            &copy; {currentYear} BlogSphere. All rights reserved.
+        <div className="mt-12 pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-gray-500 text-sm">
+            © {new Date().getFullYear()} Kalamkunja. All rights reserved.
           </p>
-          
-          <div className="flex items-center gap-1 text-gray-500 text-sm">
-            <span>Made with</span>
-            <motion.span 
-              className="text-red-500"
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              <FaHeart />
-            </motion.span>
-            <span>by</span>
-            <a 
-              href="https://utsab-ad.vercel.app" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-indigo-400 hover:text-indigo-300 transition-colors"
-            >
-              Utsab Adhikari
-            </a>
+          <div className="mt-4 md:mt-0 flex space-x-6">
+            {["Twitter", "Facebook", "LinkedIn", "Instagram"].map(
+              (platform) => (
+                <a
+                  key={platform}
+                  href="#"
+                  className="text-gray-400 hover:text-blue-600"
+                  aria-label={platform}
+                >
+                  <span className="sr-only">{platform}</span>
+                  <div className="h-6 w-6 bg-gray-200 rounded-full flex items-center justify-center">
+                    {platform.charAt(0)}
+                  </div>
+                </a>
+              )
+            )}
           </div>
         </div>
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}
